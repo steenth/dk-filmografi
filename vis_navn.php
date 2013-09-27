@@ -28,7 +28,7 @@ global $dumpmode;
 	$ch = curl_init();
 
 	// set URL and other appropriate options
-	curl_setopt($ch, CURLOPT_URL, "http://nationalfilmografien.service.dfi.dk/movie.svc/json/$nr");
+	curl_setopt($ch, CURLOPT_URL, "http://nationalfilmografien.service.dfi.dk/person.svc/json/$nr");
 	curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
 	curl_setopt($ch, CURLOPT_HEADER, 0);
 
@@ -48,7 +48,7 @@ global $dumpmode;
 
 ###########################################################################
 
-function tjk_person($navn, $nr)
+function tjk_titel($navn, $nr)
 {
 global $connection;
 
@@ -56,8 +56,8 @@ global $connection;
 from page, externallinks
 where page_id=el_from
    and page_namespace=0
-   and ( el_to=\"http://www.dfi.dk/faktaomfilm/nationalfilmografien/nfperson.aspx?id=$nr\"
-   or el_to=\"http://www.dfi.dk/FaktaOmFilm/Nationalfilmografien/nfperson.aspx?id=$nr\")";
+   and ( el_to=\"http://www.dfi.dk/faktaomfilm/nationalfilmografien/nffilm.aspx?id=$nr\"
+   or el_to=\"http://www.dfi.dk/FaktaOmFilm/Nationalfilmografien/nffilm.aspx?id=$nr\")";
 
 	$result = mysql_query($query, $connection);
 	if($result===false)
@@ -98,6 +98,8 @@ $konv_rolletype["Music"] = "musik";
 $konv_rolletype["Production design"] = "produktionsdesign";
 $konv_rolletype["Actors"] = "skuespiller";
 $konv_rolletype["Stills"] = "stills";
+$konv_rolletype["Medvirkende"] = "medvirkende";
+$konv_rolletype["Stemme"] = "stemme";
 
 ###########################################################################
 
@@ -107,23 +109,24 @@ global $konv_rolletype;
 
 	$filmdata=json_decode($filmdata_ind);
 	# print_r($filmdata);
-	vis_header($filmdata->Title);
+	vis_header($filmdata->Name);
 	if(isset($filmdata->Description))
 		echo htmlentities($filmdata->Description, ENT_COMPAT, "UTF-8") . "\n";
 	echo "<ol>\n";
-	foreach($filmdata->Credits as $cur_credit) {
+	foreach($filmdata->Movies as $cur_movie) {
 		echo "<li>";
-		$vis_skabelon=tjk_person($cur_credit->Name, $cur_credit->ID);
-		if(isset($cur_credit->Description))
-			echo ", " . htmlentities($cur_credit->Description, ENT_COMPAT, "UTF-8");
-		$cur_type=$cur_credit->Type;
+		$vis_skabelon=tjk_titel($cur_movie->Name, $cur_movie->ID);
+		if(isset($cur_movie->Description))
+			echo ", " . htmlentities($cur_movie->Description, ENT_COMPAT, "UTF-8");
+		$cur_type=$cur_movie->Type;
 		if(isset($konv_rolletype["$cur_type"]))
 			echo ", " . $konv_rolletype["$cur_type"];
 		else
-			echo ", \$konv_rolletype[\"" . $cur_credit->Type . "\"] = \"xx\";";
-		echo " (<a href=\"http://www.dfi.dk/faktaomfilm/nationalfilmografien/nfperson.aspx?id=" . $cur_credit->ID . "\">filmografi</a>, <a href=\"vis_navn.php?nr=" . $cur_credit->ID . "\">navn</a>)";
+			echo ", " . $cur_movie->Type . "";
+		echo " (<a href=\"http://www.dfi.dk/faktaomfilm/nationalfilmografien/nffilm.aspx?id=" . $cur_movie->ID . "\">filmografi</a>, <a href=\"vis_titel.php?nr=" . $cur_movie->ID . "\">navn</a>)";
+# http://www.dfi.dk/faktaomfilm/nationalfilmografien/nffilm.aspx?id=76465
 		if($vis_skabelon)
-			echo " &mdash; {{Danmark Nationalfilmografi navn|" . $cur_credit->ID . "}}";
+			echo " &mdash; {{Danmark Nationalfilmografi titel|" . $cur_movie->ID . "}}";
 		echo "</li>\n";
 	}
 	echo "</ol>\n";
