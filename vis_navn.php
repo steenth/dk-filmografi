@@ -105,7 +105,7 @@ $konv_rolletype["Stemme"] = "stemme";
 
 function format_film($filmdata_ind)
 {
-global $konv_rolletype;
+global $konv_rolletype, $connection;
 
 	$filmdata=json_decode($filmdata_ind);
 	# print_r($filmdata);
@@ -124,13 +124,46 @@ global $konv_rolletype;
 		else
 			echo ", " . $cur_movie->Type . "";
 		echo " (<a href=\"http://www.dfi.dk/faktaomfilm/nationalfilmografien/nffilm.aspx?id=" . $cur_movie->ID . "\">filmografi</a>, <a href=\"vis_titel.php?nr=" . $cur_movie->ID . "\">filmtitel</a>)";
-# http://www.dfi.dk/faktaomfilm/nationalfilmografien/nffilm.aspx?id=76465
 		if($vis_skabelon)
 			echo " &mdash; {{Danmark Nationalfilmografi titel|" . $cur_movie->ID . "}}";
 		echo "</li>\n";
 	}
 	echo "</ol>\n";
-	echo "Kilde nr\n";
+	echo "Kilde <a href=\"http://www.dfi.dk/faktaomfilm/nationalfilmografien/nfperson.aspx?id=" . $filmdata->ID . "\">DFI filmdata</a>\n";
+
+	$query="select page_title
+from page, externallinks
+where page_id=el_from
+   and page_namespace=0
+   and ( el_to=\"http://www.dfi.dk/faktaomfilm/nationalfilmografien/nfperon.aspx?id=" . $filmdata->ID . "\"
+   or el_to=\"http://www.dfi.dk/FaktaOmFilm/Nationalfilmografien/nfperon.aspx?id=" . $filmdata->ID . "\")";
+
+	$result = mysql_query($query, $connection);
+	if($result===false)
+		echo "$query\n";
+
+	if ($row = mysql_fetch_row($result)) {
+		$link=$row[0];
+		$wikiurl="https://da.wikipedia.org/wiki/" . urlencode(strtr($link, ' ', '_'));
+		echo "  Wikipedia: <a href=\"$wikiurl\">" . htmlentities($link, ENT_COMPAT, "UTF-8") . "</a>";
+		return;
+	}
+
+	$query="select page_title
+from page
+where page_title = '" . addslashes(strtr($filmdata->Name, ' ', '_')) . "'
+and page_namespace=0";
+
+	$result = mysql_query($query, $connection);
+	if($result===false)
+		echo "$query\n";
+
+	if ($row = mysql_fetch_row($result)) {
+		$wikiurl="https://da.wikipedia.org/wiki/" . urlencode(strtr($filmdata->Name, ' ', '_'));
+		echo "&ndash; Wikipedia:  <a href=\"$wikiurl\">" . htmlentities($filmdata->Name, ENT_COMPAT, "UTF-8") . "</a> &ndash; {{Danmark Nationalfilmografi navn|" . $filmdata->ID . "}}";
+		return;
+	}
+	echo "  &mdash; {{Danmark Nationalfilmografi navn|" . $filmdata->ID . "}}";
 }
 
 ###########################################################################
