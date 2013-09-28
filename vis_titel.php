@@ -143,7 +143,7 @@ where page_id=el_from
 	if ($row = mysql_fetch_row($result)) {
 		$link=$row[0];
 		$wikiurl="https://da.wikipedia.org/wiki/" . urlencode(strtr($link, ' ', '_'));
-		echo "  Wikipedia: <a href=\"$wikiurl\">" . htmlentities($link, ENT_COMPAT, "UTF-8") . "</a>";
+		echo "  Wikipedia: <a href=\"$wikiurl\">" . htmlentities(strtr($link, '_', ' '), ENT_COMPAT, "UTF-8") . "</a>";
 		return;
 	}
 
@@ -161,7 +161,7 @@ and page_namespace=0";
 		echo "&ndash; Wikipedia:  <a href=\"$wikiurl\">" . htmlentities($filmdata->Title, ENT_COMPAT, "UTF-8") . "</a> &ndash; {{Danmark Nationalfilmografi titel|" . $filmdata->ID . "}}";
 		return;
 	}
-	echo "  &mdash; {{Danmark Nationalfilmografi navn|" . $filmdata->ID . "}}";
+	echo "  &mdash; {{Danmark Nationalfilmografi titel|" . $filmdata->ID . "}}";
 }
 
 ###########################################################################

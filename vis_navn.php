@@ -145,7 +145,7 @@ where page_id=el_from
 	if ($row = mysql_fetch_row($result)) {
 		$link=$row[0];
 		$wikiurl="https://da.wikipedia.org/wiki/" . urlencode(strtr($link, ' ', '_'));
-		echo "  Wikipedia: <a href=\"$wikiurl\">" . htmlentities($link, ENT_COMPAT, "UTF-8") . "</a>";
+		echo "  Wikipedia: <a href=\"$wikiurl\">" . htmlentities(strtr($link, '_', ' '), ENT_COMPAT, "UTF-8") . "</a>";
 		return;
 	}
 
