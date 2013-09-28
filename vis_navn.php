@@ -43,7 +43,7 @@ global $dumpmode;
 	}
 
 	# echo "xx\n$filmdata_ind\nxx\n";
-	format_film($filmdata_ind);
+	format_person($filmdata_ind);
 }
 
 ###########################################################################
@@ -103,7 +103,7 @@ $konv_rolletype["Stemme"] = "stemme";
 
 ###########################################################################
 
-function format_film($filmdata_ind)
+function format_person($filmdata_ind)
 {
 global $konv_rolletype, $connection;
 
@@ -135,8 +135,8 @@ global $konv_rolletype, $connection;
 from page, externallinks
 where page_id=el_from
    and page_namespace=0
-   and ( el_to=\"http://www.dfi.dk/faktaomfilm/nationalfilmografien/nfperon.aspx?id=" . $filmdata->ID . "\"
-   or el_to=\"http://www.dfi.dk/FaktaOmFilm/Nationalfilmografien/nfperon.aspx?id=" . $filmdata->ID . "\")";
+   and ( el_to=\"http://www.dfi.dk/faktaomfilm/nationalfilmografien/nfperson.aspx?id=" . $filmdata->ID . "\"
+   or el_to=\"http://www.dfi.dk/FaktaOmFilm/Nationalfilmografien/nfperson.aspx?id=" . $filmdata->ID . "\")";
 
 	$result = mysql_query($query, $connection);
 	if($result===false)
@@ -210,12 +210,12 @@ and page_namespace=0";
 		{
 			$testdata = fgets($handle);
 			if($testdata=="") break;
-			format_film($testdata);
+			format_person($testdata);
 		}
 		fclose($handle);
 	} else hand_film($cur_nr);
 
-	# format_film($testdata);
+	# format_person($testdata);
 
 	mysql_close($connection);
 	if($dumpmode==0) { ?>
