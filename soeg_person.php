@@ -1,6 +1,6 @@
 <html>
 <header>
-<title>Søgeresultat af søgning af personer</title>
+<title>S&oslash;geresultat af s&oslash;gning af personer</title>
 </header>
 <body>
 <?
@@ -14,8 +14,8 @@
 		exit(1);
 	}
 
-	if(isset($_POST["soeg"])) {
-		$cur_nr=$_POST["soeg"];
+	if(isset($_GET["soeg"])) {
+		$soeg=$_GET["soeg"];
 		#if(!preg_match("/^[0-9]*$/", $cur_nr)) {
 		#	die("$nr ikke et nummer");
 		#}
@@ -24,7 +24,7 @@
 	$ch = curl_init();
 
 	// set URL and other appropriate options
-	curl_setopt($ch, CURLOPT_URL, "http://nationalfilmografien.service.dfi.dk/person.svc/json/list?namecontains=$soeg");
+	curl_setopt($ch, CURLOPT_URL, "http://nationalfilmografien.service.dfi.dk/person.svc/json/list?namecontains=" . urlencode($soeg));
 	curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
 	curl_setopt($ch, CURLOPT_HEADER, 0);
 
@@ -35,11 +35,11 @@
 	// close cURL resource, and free up system resources
 	curl_close($ch);
 	# print_r($soegedata);
-	echo "<ol>\n";
+	echo "<ul>\n";
 	foreach(array_keys($soegedata) as $cur_person) {
 		echo "<li><a href=\"vis_navn.php?nr=" . $soegedata["$cur_person"]->ID . "\">" . htmlentities($soegedata["$cur_person"]->Name, ENT_COMPAT, "UTF-8") . "</a></li>\n";
 	}
-	echo "</ol>\n";
+	echo "</ul>\n";
 ?>
 </body>
 </html>
