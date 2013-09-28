@@ -123,7 +123,7 @@ global $konv_rolletype;
 			echo ", " . $konv_rolletype["$cur_type"];
 		else
 			echo ", " . $cur_movie->Type . "";
-		echo " (<a href=\"http://www.dfi.dk/faktaomfilm/nationalfilmografien/nffilm.aspx?id=" . $cur_movie->ID . "\">filmografi</a>, <a href=\"vis_titel.php?nr=" . $cur_movie->ID . "\">navn</a>)";
+		echo " (<a href=\"http://www.dfi.dk/faktaomfilm/nationalfilmografien/nffilm.aspx?id=" . $cur_movie->ID . "\">filmografi</a>, <a href=\"vis_titel.php?nr=" . $cur_movie->ID . "\">filmtitel</a>)";
 # http://www.dfi.dk/faktaomfilm/nationalfilmografien/nffilm.aspx?id=76465
 		if($vis_skabelon)
 			echo " &mdash; {{Danmark Nationalfilmografi titel|" . $cur_movie->ID . "}}";
@@ -162,7 +162,7 @@ global $konv_rolletype;
 
 	if(isset($_GET["nr"])) {
 		$cur_nr=$_GET["nr"];
-		if(preg_match("/^[0-9]*$/", $cur_nr)) {
+		if(!preg_match("/^[0-9]*$/", $cur_nr)) {
 			die("$nr ikke et nummer");
 		}
 	}

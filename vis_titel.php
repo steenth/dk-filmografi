@@ -159,7 +159,7 @@ global $konv_rolletype;
 
 	if(isset($_GET["nr"])) {
 		$cur_nr=$_GET["nr"];
-		if(preg_match("/^[0-9]*$/", $cur_nr)) {
+		if(!preg_match("/^[0-9]*$/", $cur_nr)) {
 			die("$nr ikke et nummer");
 		}
 	}
