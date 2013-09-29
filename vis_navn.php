@@ -110,14 +110,17 @@ global $konv_rolletype, $connection;
 	$filmdata=json_decode($filmdata_ind);
 	# print_r($filmdata);
 	vis_header($filmdata->Name);
-	if(isset($filmdata->Description))
-		echo htmlentities($filmdata->Description, ENT_COMPAT, "UTF-8") . "\n";
+	if(isset($filmdata->Description)) {
+		if($filmdata->Description!="")
+			echo htmlentities($filmdata->Description, ENT_COMPAT, "UTF-8") . "\n";
+	}
 	echo "<ol>\n";
 	foreach($filmdata->Movies as $cur_movie) {
 		echo "<li>";
 		$vis_skabelon=tjk_titel($cur_movie->Name, $cur_movie->ID);
 		if(isset($cur_movie->Description))
-			echo ", " . htmlentities($cur_movie->Description, ENT_COMPAT, "UTF-8");
+			if($filmdata->Description!="")
+				echo ", " . htmlentities($cur_movie->Description, ENT_COMPAT, "UTF-8");
 		$cur_type=$cur_movie->Type;
 		if(isset($konv_rolletype["$cur_type"]))
 			echo ", " . $konv_rolletype["$cur_type"];
