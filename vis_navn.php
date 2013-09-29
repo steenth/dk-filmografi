@@ -125,7 +125,7 @@ global $konv_rolletype, $connection;
 		if(isset($konv_rolletype["$cur_type"]))
 			echo ", " . $konv_rolletype["$cur_type"];
 		else
-			echo ", " . $cur_movie->Type . "";
+			echo ", " . htmlentities($cur_movie->Type, ENT_COMPAT, "UTF-8") . "";
 		echo " (<a href=\"http://www.dfi.dk/faktaomfilm/nationalfilmografien/nffilm.aspx?id=" . $cur_movie->ID . "\">filmografi</a>, <a href=\"vis_titel.php?nr=" . $cur_movie->ID . "\">filmtitel</a>)";
 		if($vis_skabelon)
 			echo " &mdash; {{Danmark Nationalfilmografi titel|" . $cur_movie->ID . "}}";
