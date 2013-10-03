@@ -10,11 +10,17 @@ include "tab/wiki_database_opsaet.php";
 function vis_header($tekst)
 {
 ?>
+<!DOCTYPE HTML>
 <html>
 <header>
 <title><? echo htmlentities($tekst, ENT_COMPAT, "UTF-8") ?></title>
+    <meta name="language" content="DA" />
+    <meta http-equiv="Content-Language" content="DA" />
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <link href="dfi_soeg.css" rel="stylesheet" type="text/css">
 </header>
 <body>
+<div class="wrapper">
 <?
 	echo "<h1>" . htmlentities($tekst, ENT_COMPAT, "UTF-8") . "</h1>\n";
 }
@@ -222,6 +228,7 @@ and page_namespace=0";
 
 	mysql_close($connection);
 	if($dumpmode==0) { ?>
+</div>
 </body>
 </html>
 <? }
