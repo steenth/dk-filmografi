@@ -1,8 +1,14 @@
+<!DOCTYPE HTML>
 <html>
 <header>
 <title>S&oslash;geresultat af s&oslash;gning af personer</title>
+    <meta name="language" content="DA" />
+    <meta http-equiv="Content-Language" content="DA" />
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <link href="dfi_soeg.css" rel="stylesheet" type="text/css">
 </header>
 <body>
+<div class="wrapper">
 <?
 	$opts = getopt("s:d:D");
 
@@ -41,5 +47,6 @@
 	}
 	echo "</ul>\n";
 ?>
+</div>
 </body>
 </html>
