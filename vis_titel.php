@@ -54,9 +54,94 @@ global $dumpmode;
 
 ###########################################################################
 
+function note_links($link, $id)
+{
+global $connection, $fra_link, $til_link;
+
+	# direkte link til film-titel
+	$query="select pl_title
+from pagelinks, page
+where pl_from=$id
+and page_title=pl_title
+and page_namespace = pl_namespace
+and page_is_redirect=0
+and pl_namespace = 0";
+
+	$result = mysql_query($query, $connection);
+	if($result===false)
+		echo "$query\n";
+
+	while ($row = mysql_fetch_row($result)) {
+		$fundet_link=$row[0];
+		$til_link["$fundet_link"] = 0;
+		# echo "$fundet_link 0\n";
+	}	
+
+	# indirekte link til film-titel
+        $query = "select rd_title
+from page, pagelinks, redirect
+where pl_from = $id
+and page_title = pl_title
+and page_namespace = pl_namespace
+and page_is_redirect!=0
+and pl_namespace = 0
+and rd_from = page_id
+and rd_namespace = 0";
+	
+	$result = mysql_query($query, $connection);
+	if($result===false)
+		echo "$query\n";
+
+	while ($row = mysql_fetch_row($result)) {
+		$fundet_link=$row[0];
+		$til_link["$fundet_link"] = 1;
+		# echo "$fundet_link 1\n";
+	}	
+
+	$query="select page_title
+from page, pagelinks
+where pl_title='" . addslashes($link) . "'
+and page_id=pl_from
+and page_namespace=0
+and pl_namespace=0";
+
+	$result = mysql_query($query, $connection);
+	if($result===false)
+		echo "$query\n";
+
+	while ($row = mysql_fetch_row($result)) {
+		$fundet_link=$row[0];
+		$fra_link["$fundet_link"] = 0;
+		#echo "$fundet_link 0\n";
+	}	
+
+	$query="select p1.page_title, p2.page_title
+from page p1, redirect, pagelinks, page p2
+where rd_title='" . addslashes($link) . "'
+and p1.page_id=rd_from
+and rd_namespace=0
+and p1.page_namespace=0
+and pl_title=p1.page_title
+and pl_namespace=0
+and pl_from=p2.page_id
+and p2.page_namespace=0";
+
+	$result = mysql_query($query, $connection);
+	if($result===false)
+		echo "$query\n";
+
+	while ($row = mysql_fetch_row($result)) {
+		$fundet_link=$row[1];
+		$fra_link["$fundet_link"] = 1;
+		# echo "$fundet_link 1 " . $row[0] . " " . $row[1] . "\n";
+	}	
+}
+
+###########################################################################
+
 function tjk_person($navn, $nr)
 {
-global $connection;
+global $connection, $fra_link, $til_link, $linkstatus;
 
 	$query="select page_title
 from page, externallinks
@@ -73,6 +158,14 @@ where page_id=el_from
 		$link=$row[0];
 		$wikiurl="https://da.wikipedia.org/wiki/" . urlencode(strtr($link, ' ', '_'));
 		echo "<a href=\"$wikiurl\">" . htmlentities($link, ENT_COMPAT, "UTF-8") . "</a>";
+		if(isset($til_link["$link"]) && isset($fra_link["$link"]))
+			$linkstatus=" - link ok";
+		else if(isset($til_link["$link"]))
+			$linkstatus=" - kun link til person findes";
+		else if(isset($fra_link["$link"]))
+			$linkstatus=" - kun link fra person findes";
+		else
+			$linkstatus=" - ingen link imellem titel og person";
 		return 0;
 	}
 
@@ -87,7 +180,16 @@ and page_namespace=0";
 
 	if ($row = mysql_fetch_row($result)) {
 		$wikiurl="https://da.wikipedia.org/wiki/" . urlencode(strtr($navn, ' ', '_'));
+		$link=$row[0];
 		echo "<a href=\"$wikiurl\">" . htmlentities($navn, ENT_COMPAT, "UTF-8") . "</a>";
+		if(isset($til_link["$link"]) && isset($fra_link["$link"]))
+			$linkstatus=" - link ok";
+		else if(isset($til_link["$link"]))
+			$linkstatus=" - kun link til person findes";
+		else if(isset($fra_link["$link"]))
+			$linkstatus=" - kun link fra person findes";
+		else
+			$linkstatus=" - ingen link imellem titel og person";
 		return 1;
 	}
 	echo htmlentities($navn, ENT_COMPAT, "UTF-8");
@@ -104,38 +206,23 @@ $konv_rolletype["Music"] = "musik";
 $konv_rolletype["Production design"] = "produktionsdesign";
 $konv_rolletype["Actors"] = "skuespiller";
 $konv_rolletype["Stills"] = "stills";
+$konv_rolletype["Voice"] = "stemme";
+$konv_rolletype["Production"] = "produktion";
+$konv_rolletype["Electrical dept."] = "lys";
+$konv_rolletype["Wardrobe"] = "kostumer"; 
+$konv_rolletype["Makeup"] = "makeup"; 
+$konv_rolletype["Sound"] = "lyd";
+$konv_rolletype["Stunt"] = "Stunt";
 
 ###########################################################################
 
 function format_film($filmdata_ind)
 {
-global $konv_rolletype, $connection;
+global $konv_rolletype, $connection, $linkstatus;
 
 	$filmdata=json_decode($filmdata_ind);
-	# print_r($filmdata);
-	vis_header($filmdata->Title);
-	if(isset($filmdata->Description))
-		echo htmlentities($filmdata->Description, ENT_COMPAT, "UTF-8") . "\n";
-	echo "<ol>\n";
-	foreach($filmdata->Credits as $cur_credit) {
-		echo "<li>";
-		$vis_skabelon=tjk_person($cur_credit->Name, $cur_credit->ID);
-		if(isset($cur_credit->Description))
-			echo ", " . htmlentities($cur_credit->Description, ENT_COMPAT, "UTF-8");
-		$cur_type=$cur_credit->Type;
-		if(isset($konv_rolletype["$cur_type"]))
-			echo ", " . $konv_rolletype["$cur_type"];
-		else
-			echo ", \$konv_rolletype[\"" . $cur_credit->Type . "\"] = \"xx\";";
-		echo " (<a href=\"http://www.dfi.dk/faktaomfilm/nationalfilmografien/nfperson.aspx?id=" . $cur_credit->ID . "\">filmografi</a>, <a href=\"vis_navn.php?nr=" . $cur_credit->ID . "\">navn</a>)";
-		if($vis_skabelon)
-			echo " &mdash; {{Danmark Nationalfilmografi navn|" . $cur_credit->ID . "}}";
-		echo "</li>\n";
-	}
-	echo "</ol>\n";
-	echo "Kilde <a href=\"http://www.dfi.dk/faktaomfilm/nationalfilmografien/nffilm.aspx?id=" . $filmdata->ID . "\">DFI filmdata</a>\n";
 
-	$query="select page_title
+	$query="select page_title, page_id
 from page, externallinks
 where page_id=el_from
    and page_namespace=0
@@ -148,26 +235,58 @@ where page_id=el_from
 
 	if ($row = mysql_fetch_row($result)) {
 		$link=$row[0];
+		$id=$row[1];
 		$wikiurl="https://da.wikipedia.org/wiki/" . urlencode(strtr($link, ' ', '_'));
-		echo "  Wikipedia: <a href=\"$wikiurl\">" . htmlentities(strtr($link, '_', ' '), ENT_COMPAT, "UTF-8") . "</a>";
-		return;
-	}
+		$slut="  Wikipedia: <a href=\"$wikiurl\">" . htmlentities(strtr($link, '_', ' '), ENT_COMPAT, "UTF-8") . "</a>";
+	} else {
 
-	$query="select page_title
+		$query="select page_title, page_id
 from page
 where page_title = '" . addslashes(strtr($filmdata->Title, ' ', '_')) . "'
 and page_namespace=0";
 
-	$result = mysql_query($query, $connection);
-	if($result===false)
-		echo "$query\n";
+		$result = mysql_query($query, $connection);
+		if($result===false)
+			echo "$query\n";
 
-	if ($row = mysql_fetch_row($result)) {
-		$wikiurl="https://da.wikipedia.org/wiki/" . urlencode(strtr($filmdata->Title, ' ', '_'));
-		echo "&ndash; Wikipedia:  <a href=\"$wikiurl\">" . htmlentities($filmdata->Title, ENT_COMPAT, "UTF-8") . "</a> &ndash; {{Danmark Nationalfilmografi titel|" . $filmdata->ID . "}}";
-		return;
+		if ($row = mysql_fetch_row($result)) {
+			$wikiurl="https://da.wikipedia.org/wiki/" . urlencode(strtr($filmdata->Title, ' ', '_'));
+			$slut="&ndash; Wikipedia:  <a href=\"$wikiurl\">" . htmlentities($filmdata->Title, ENT_COMPAT, "UTF-8") . "</a> &ndash; {{Danmark Nationalfilmografi titel|" . $filmdata->ID . "}}";
+			$link=$row[0];
+			$id=$row[1];
+		} else {
+			$id=0;
+			$slut="  &mdash; {{Danmark Nationalfilmografi titel|" . $filmdata->ID . "}}";
+		}
 	}
-	echo "  &mdash; {{Danmark Nationalfilmografi titel|" . $filmdata->ID . "}}";
+
+	if($id)
+		note_links($link, $id);
+
+	# print_r($filmdata);
+	vis_header($filmdata->Title);
+	if(isset($filmdata->Description))
+		echo htmlentities($filmdata->Description, ENT_COMPAT, "UTF-8") . "\n";
+	echo "<ol>\n";
+	foreach($filmdata->Credits as $cur_credit) {
+		$linkstatus="";
+		echo "<li>";
+		$vis_skabelon=tjk_person($cur_credit->Name, $cur_credit->ID);
+		if(isset($cur_credit->Description))
+			echo ", " . htmlentities($cur_credit->Description, ENT_COMPAT, "UTF-8");
+		$cur_type=$cur_credit->Type;
+		if(isset($konv_rolletype["$cur_type"]))
+			echo ", " . $konv_rolletype["$cur_type"];
+		else
+			echo ", \$konv_rolletype[\"" . $cur_credit->Type . "\"] = \"xx\";";
+		echo " (<a href=\"http://www.dfi.dk/faktaomfilm/nationalfilmografien/nfperson.aspx?id=" . $cur_credit->ID . "\">filmografi</a>, <a href=\"vis_navn.php?nr=" . $cur_credit->ID . "\">navn</a>)";
+		if($vis_skabelon)
+			echo " &mdash; {{Danmark Nationalfilmografi navn|" . $cur_credit->ID . "}}";
+		echo "$linkstatus</li>\n";
+	}
+	echo "</ol>\n";
+	echo "<p>Kilde <a href=\"http://www.dfi.dk/faktaomfilm/nationalfilmografien/nffilm.aspx?id=" . $filmdata->ID . "\">DFI filmdata</a>\n";
+	echo "$slut</p>\n";
 }
 
 ###########################################################################
