@@ -1,9 +1,10 @@
 <?php
-// create a new cURL resource
+
+###########################################################################
 
 include "password.php";
 include "tab/wiki_database_opsaet.php";
-#include "testdata.php";
+include "include/vislinks.php";
 
 ###########################################################################
 
@@ -311,7 +312,7 @@ and page_namespace=0";
 	}
 	echo "</ol>\n";
 	echo "<p>Kilde <a href=\"http://www.dfi.dk/faktaomfilm/nationalfilmografien/nffilm.aspx?id=" . $filmdata->ID . "\">DFI filmdata</a>\n";
-	echo "$slut</p>\n";
+	echo "$slut" . handtere_links($id) . "</p>\n";
 }
 
 ###########################################################################
