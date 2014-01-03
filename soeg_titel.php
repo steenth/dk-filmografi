@@ -1,7 +1,7 @@
 <!DOCTYPE HTML>
 <html>
 <header>
-<title>S&oslash;geresultat af s&oslash;gning af personer</title>
+<title>S&oslash;geresultat af s&oslash;gning af titler</title>
     <meta name="language" content="DA" />
     <meta http-equiv="Content-Language" content="DA" />
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
@@ -29,14 +29,12 @@
 
 	$ch = curl_init();
 
-	echo "<h1>Resultat på s&oslash;gning</h1>";
-	$url="http://nationalfilmografien.service.dfi.dk/person.svc/json/list?namecontains=" . urlencode($soeg);
 	// set URL and other appropriate options
-	curl_setopt($ch, CURLOPT_URL, $url);
+	curl_setopt($ch, CURLOPT_URL, "http://nationalfilmografien.service.dfi.dk/movie.svc/json/list?titlecontains=" . urlencode($soeg));
 	curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
 	curl_setopt($ch, CURLOPT_HEADER, 0);
-	# echo "<pre>$url</pre>";
 
+	echo "<h1>Resultat på s&oslash;gning</h1>";
 	// grab URL and pass it to the browser
 	$soegedata_ind=curl_exec($ch);
 	$soegedata=json_decode($soegedata_ind);
@@ -45,8 +43,8 @@
 	curl_close($ch);
 	# print_r($soegedata);
 	echo "<ul>\n";
-	foreach(array_keys($soegedata) as $cur_person) {
-		echo "<li><a href=\"vis_navn.php?nr=" . $soegedata["$cur_person"]->ID . "\">" . htmlentities($soegedata["$cur_person"]->Name, ENT_COMPAT, "UTF-8") . "</a></li>\n";
+	foreach(array_keys($soegedata) as $cur_titel) {
+		echo "<li><a href=\"vis_titel.php?nr=" . $soegedata["$cur_titel"]->ID . "\">" . htmlentities($soegedata["$cur_titel"]->Name, ENT_COMPAT, "UTF-8") . "</a></li>\n";
 	}
 	echo "</ul>\n";
 ?>

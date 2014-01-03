@@ -1,7 +1,7 @@
 <!DOCTYPE HTML>
 <html>
 <header>
-<title>Find personer hos DFI</title>
+<title>Find personer eller film i DFI's filmdatabase</title>
     <meta name="language" content="DA" />
     <meta http-equiv="Content-Language" content="DA" />
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
@@ -10,11 +10,18 @@
 <body>
 <div class="wrapper">
 <h1>Find personer hos DFI</h1>
-<p>S&oslash;g personer der har arbejdet i den danske filmverden.
+<p>S&oslash;g personer og titler i den danske filmverden.
 </p>	
 <form action="soeg_person.php" method="get">
 <label for=""person">Navn:</label>
 <input name="soeg" id="person" type="text">
+<input type="submit" value="S&oslash;g">
+</form>
+<p>S&oslash;g titler i den danske filmverden.
+</p>	
+<form action="soeg_titel.php" method="get">
+<label for=""titel">Titel:</label>
+<input name="soeg" id="titel" type="text">
 <input type="submit" value="S&oslash;g">
 </form>
 <p>Det Danske Filminstitut har metadata om film, skuespillere og filmfolk tilbage fra dansk films fødsel til de nyeste titler i biografen. Du finder ogs&aring; links til trailere, filmklip, stills, plakater og andre materialer. Søg blandt 19.414 titler, 96.776 navne og 5.313 selskaber.
