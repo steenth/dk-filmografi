@@ -56,7 +56,7 @@ global $dumpmode;
 
 function note_links($link, $id)
 {
-global $connection, $fra_link, $til_link;
+global $connection, $fra_link, $til_link, $verbose;
 
 	# direkte link til film-titel
 	$query="select pl_title
@@ -74,11 +74,12 @@ and pl_namespace = 0";
 	while ($row = mysql_fetch_row($result)) {
 		$fundet_link=$row[0];
 		$til_link["$fundet_link"] = 0;
-		# echo "$fundet_link 0\n";
+		if($verbose)
+			echo "til $fundet_link 0\n";
 	}	
 
 	# indirekte link til film-titel
-        $query = "select rd_title
+        $query = "select rd_title, pl_title
 from page, pagelinks, redirect
 where pl_from = $id
 and page_title = pl_title
@@ -95,7 +96,8 @@ and rd_namespace = 0";
 	while ($row = mysql_fetch_row($result)) {
 		$fundet_link=$row[0];
 		$til_link["$fundet_link"] = 1;
-		# echo "$fundet_link 1\n";
+		if($verbose)
+			echo "til $fundet_link 1 " . $row[0] . " " . $row[1] . "\n";
 	}	
 
 	$query="select page_title
@@ -112,7 +114,8 @@ and pl_namespace=0";
 	while ($row = mysql_fetch_row($result)) {
 		$fundet_link=$row[0];
 		$fra_link["$fundet_link"] = 0;
-		#echo "$fundet_link 0\n";
+		if($verbose)
+			echo "fra $fundet_link 0\n";
 	}	
 
 	$query="select p1.page_title, p2.page_title
@@ -133,7 +136,8 @@ and p2.page_namespace=0";
 	while ($row = mysql_fetch_row($result)) {
 		$fundet_link=$row[1];
 		$fra_link["$fundet_link"] = 1;
-		# echo "$fundet_link 1 " . $row[0] . " " . $row[1] . "\n";
+		if($verbose)
+			echo "fra $fundet_link 1 " . $row[0] . " " . $row[1] . "\n";
 	}	
 }
 
@@ -157,19 +161,21 @@ where page_id=el_from
 	if ($row = mysql_fetch_row($result)) {
 		$link=$row[0];
 		$wikiurl="https://da.wikipedia.org/wiki/" . urlencode(strtr($link, ' ', '_'));
-		echo "<a href=\"$wikiurl\">" . htmlentities($link, ENT_COMPAT, "UTF-8") . "</a>";
+		echo "<a href=\"$wikiurl\">" . htmlentities(strtr($link, '_', ' '), ENT_COMPAT, "UTF-8") . "</a>";
 		if(isset($til_link["$link"]) && isset($fra_link["$link"]))
 			$linkstatus=" - link ok";
 		else if(isset($til_link["$link"]))
 			$linkstatus=" - kun link til person findes";
 		else if(isset($fra_link["$link"]))
 			$linkstatus=" - kun link fra person findes";
+		else if(!isset($fra_link) && !isset($til_link))
+			$linkstatus="";
 		else
 			$linkstatus=" - ingen link imellem titel og person";
 		return 0;
 	}
 
-	$query="select page_title
+	$query="select page_title, page_is_redirect, page_id
 from page
 where page_title = '" . addslashes(strtr($navn, ' ', '_')) . "'
 and page_namespace=0";
@@ -179,15 +185,34 @@ and page_namespace=0";
 		echo "$query\n";
 
 	if ($row = mysql_fetch_row($result)) {
-		$wikiurl="https://da.wikipedia.org/wiki/" . urlencode(strtr($navn, ' ', '_'));
 		$link=$row[0];
-		echo "<a href=\"$wikiurl\">" . htmlentities($navn, ENT_COMPAT, "UTF-8") . "</a>";
+		if($row[1]) {
+			$rd_id=$row[2];
+			$query="select rd_title
+from redirect
+where rd_from = $rd_id";
+
+			$result = mysql_query($query, $connection);
+			if($result===false)
+				echo "$query\n";
+			if ($row = mysql_fetch_row($result))
+				$link=$row[0];
+			else
+				die("redirect $rd_id mis\n");
+
+			$tillaeg=" (R)";
+		} else
+			$tillaeg="";
+		$wikiurl="https://da.wikipedia.org/wiki/" . urlencode($link);
+		echo "<a href=\"$wikiurl\">" . htmlentities($navn, ENT_COMPAT, "UTF-8") . "$tillaeg</a>";
 		if(isset($til_link["$link"]) && isset($fra_link["$link"]))
 			$linkstatus=" - link ok";
 		else if(isset($til_link["$link"]))
 			$linkstatus=" - kun link til person findes";
 		else if(isset($fra_link["$link"]))
 			$linkstatus=" - kun link fra person findes";
+		else if(!isset($fra_link) && !isset($til_link))
+			$linkstatus="";
 		else
 			$linkstatus=" - ingen link imellem titel og person";
 		return 1;
@@ -293,10 +318,11 @@ and page_namespace=0";
 
 	$cur_database="dawiki";
 
-	$opts = getopt("d:n:j:D");
+	$opts = getopt("d:n:j:Dv");
 	$cur_nr=49694;
 	$jsonfil=null;
 	$dumpmode=0;
+	$verbose=0;
 
 	if(isset($opts))
 	foreach (array_keys($opts) as $opt) switch ($opt) {
@@ -311,6 +337,7 @@ and page_namespace=0";
 	case 'n': $cur_nr = $opts['n']; break;
 	case 'j': $jsonfil = $opts['j']; break;
 	case 'D': $dumpmode=1; break;
+	case 'v': $verbose++; break;
 	default:
 		echo "fejl: optfejl $opt\n";
 		exit(1);
