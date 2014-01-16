@@ -12,7 +12,7 @@
 <?
 	$opts = getopt("s:d:D");
 
-	if(isset($opts))
+	if(isset($opts) && is_array($opts))
 	foreach (array_keys($opts) as $opt) switch ($opt) {
 	case 's': $soeg = $opts['s']; break;
 	default:

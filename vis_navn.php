@@ -323,7 +323,7 @@ and page_namespace=0";
 	$dumpmode=0;
 	$verbose=0;
 
-	if(isset($opts))
+	if(isset($opts) && is_array($opts))
 	foreach (array_keys($opts) as $opt) switch ($opt) {
 	case 'd':
 	    // Do something with s parameter
