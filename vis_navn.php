@@ -5,6 +5,7 @@
 include "password.php";
 include "tab/wiki_database_opsaet.php";
 include "include/vislinks.php";
+include "include/falsk_positiv.php";
 
 ###########################################################################
 
@@ -146,9 +147,9 @@ and p2.page_namespace=0";
 
 function tjk_titel($navn, $nr)
 {
-global $connection, $fra_link, $til_link, $linkstatus;
+global $connection, $fra_link, $til_link, $linkstatus, $falsk_positiv_titel;
 
-	$query="select page_title
+	$query="select page_title, el_to
 from page, externallinks
 where page_id=el_from
    and page_namespace=0
@@ -159,10 +160,32 @@ where page_id=el_from
 	if($result===false)
 		echo "$query\n";
 
-	if ($row = mysql_fetch_row($result)) {
-		$link=$row[0];
+	$antal=0;
+	while ($row = mysql_fetch_row($result)) {
+		$wlink=$row[0];
+		if(!isset($falsk_positiv_titel["$nr"]["$wlink"])) {
+			$note_titel["$antal"]=$row[0];
+			$url=$row[1];
+			$antal++;
+		}
+	}
+
+	if($antal>1) {
+		echo "<li>duplet";
+		foreach($note_titel as $cur_titel) {
+			$wikiurl="https://da.wikipedia.org/wiki/" . urlencode(strtr($cur_titel, ' ', '_'));
+			echo " - \$falsk_positiv_titel[\"$nr\"][\"$cur_titel\"] = 0; <a href=\"$wikiurl\">$cur_titel</a>";	
+		}
+		echo " - <a href=\"" . $url . "\">" . $nr . "</a>\n";
+		return 0;
+	}
+
+	if ($antal == 1) {
+		$link=$note_titel[0];
 		$wikiurl="https://da.wikipedia.org/wiki/" . urlencode(strtr($link, ' ', '_'));
-		echo "<a href=\"$wikiurl\">" . htmlentities(strtr($link, '_', ' '), ENT_COMPAT, "UTF-8") . "</a>";
+		echo "<a href=\"$wikiurl\">" . htmlentities(strtr($navn, '_', ' '), ENT_COMPAT, "UTF-8") . "</a>";
+		if(strtr($link, '_', ' ') != $navn)
+			echo " (D)";
 		if(isset($til_link["$link"]) && isset($fra_link["$link"]))
 			$linkstatus=" - link ok";
 		else if(isset($til_link["$link"]))
