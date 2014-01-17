@@ -146,7 +146,7 @@ and p2.page_namespace=0";
 
 function tjk_titel($navn, $nr)
 {
-global $connection, $fra_link, $til_link, $linkstatus;
+global $connection, $fra_link, $til_link, $linkstatus, $res;
 
 	$query="select page_title
 from page, externallinks
@@ -162,7 +162,10 @@ where page_id=el_from
 	if ($row = mysql_fetch_row($result)) {
 		$link=$row[0];
 		$wikiurl="https://da.wikipedia.org/wiki/" . urlencode(strtr($link, ' ', '_'));
-		echo "<a href=\"$wikiurl\">" . htmlentities(strtr($link, '_', ' '), ENT_COMPAT, "UTF-8") . "</a>";
+		if($res)
+			echo htmlentities(strtr($link, '_', ' '), ENT_COMPAT, "UTF-8");
+		else
+			echo "<a href=\"$wikiurl\">" . htmlentities(strtr($link, '_', ' '), ENT_COMPAT, "UTF-8") . "</a>";
 		if(isset($til_link["$link"]) && isset($fra_link["$link"]))
 			$linkstatus=" - link ok";
 		else if(isset($til_link["$link"]))
@@ -322,6 +325,7 @@ and page_namespace=0";
 	$jsonfil=null;
 	$dumpmode=0;
 	$verbose=0;
+	$res = 0;
 
 	if(isset($opts) && is_array($opts))
 	foreach (array_keys($opts) as $opt) switch ($opt) {
@@ -348,6 +352,8 @@ and page_namespace=0";
 			die("$nr ikke et nummer");
 		}
 	}
+	if(isset($_GET["res"]))
+		$res = 1;
 
 
 	$connection = mysql_connect($wiki_db_opsaet[$cur_database]['host'], $db_user, $db_passwd);
