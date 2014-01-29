@@ -382,6 +382,9 @@ and page_namespace=0";
 
 
 	$connection = mysql_connect($wiki_db_opsaet[$cur_database]['host'], $db_user, $db_passwd);
+	if($connection===false) {
+		die("ingen forbindelse til database\n");
+	}
 	mysql_select_db($wiki_db_opsaet[$cur_database]['database'], $connection);
 
 	if($jsonfil) {
