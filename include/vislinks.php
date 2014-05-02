@@ -7,7 +7,7 @@ global $connection;
 		return;
 	$query = "select distinct el_to from externallinks where el_from=$id order by el_to";
 
-	$result = mysql_query($query, $connection);
+	$result = $connection->query($query);
 	$sum_links="";
 
 	if($result===false) {
@@ -16,7 +16,7 @@ global $connection;
 	}
 
 	$imdb_link=0;
-	while ($row = mysql_fetch_row($result)) {
+	while ($row = $result->fetch_row()) {
 		if(preg_match("#http://akas.imdb.com/(name|title)/(nm|tt)([0-9]+)/?#", $row[0], $opdel)) {
 		    if($imdb_link==0)
 			$sum_links .= " - <a href=\"" . $row[0] . "\" class=\"imdblink\" >imdb</a>";

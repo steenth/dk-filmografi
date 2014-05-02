@@ -69,15 +69,14 @@ and page_namespace = pl_namespace
 and page_is_redirect=0
 and pl_namespace = 0";
 
-	$result = mysql_query($query, $connection);
+	$result = $connection->query($query);
 	if($result===false)
 		echo "$query\n";
 
-	while ($row = mysql_fetch_row($result)) {
-		$fundet_link=$row[0];
-		$til_link["$fundet_link"] = 0;
+	while ($row = $result->fetch_object()) {
+		$til_link["$row->pl_title"] = 0;
 		if($verbose)
-			echo "til $fundet_link 0\n";
+			echo "til $row->pl_title 0\n";
 	}	
 
 	# indirekte link til film-titel
@@ -91,15 +90,14 @@ and pl_namespace = 0
 and rd_from = page_id
 and rd_namespace = 0";
 	
-	$result = mysql_query($query, $connection);
+	$result = $connection->query($query);
 	if($result===false)
 		echo "$query\n";
 
-	while ($row = mysql_fetch_row($result)) {
-		$fundet_link=$row[0];
-		$til_link["$fundet_link"] = 1;
+	while ($row = $result->fetch_object()) {
+		$til_link["$row->rd_title"] = 1;
 		if($verbose)
-			echo "til $fundet_link 1 " . $row[0] . " " . $row[1] . "\n";
+			echo "til $row->rd_title 1 " . $row->rd_title . " " . $row->pl_title . "\n";
 	}	
 
 	$query="select page_title
@@ -109,15 +107,14 @@ and page_id=pl_from
 and page_namespace=0
 and pl_namespace=0";
 
-	$result = mysql_query($query, $connection);
+	$result = $connection->query($query);
 	if($result===false)
 		echo "$query\n";
 
-	while ($row = mysql_fetch_row($result)) {
-		$fundet_link=$row[0];
-		$fra_link["$fundet_link"] = 0;
+	while ($row = $result->fetch_object()) {
+		$fra_link["$row->page_title"] = 0;
 		if($verbose)
-			echo "fra $fundet_link 0\n";
+			echo "fra $row->page_title 0\n";
 	}	
 
 	$query="select p1.page_title, p2.page_title
@@ -131,11 +128,11 @@ and pl_namespace=0
 and pl_from=p2.page_id
 and p2.page_namespace=0";
 
-	$result = mysql_query($query, $connection);
+	$result = $connection->query($query);
 	if($result===false)
 		echo "$query\n";
 
-	while ($row = mysql_fetch_row($result)) {
+	while ($row = $result->fetch_row()) {
 		$fundet_link=$row[1];
 		$fra_link["$fundet_link"] = 1;
 		if($verbose)
@@ -156,16 +153,15 @@ where page_id=el_from
    and ( el_to=\"http://www.dfi.dk/faktaomfilm/nationalfilmografien/nfperson.aspx?id=$nr\"
    or el_to=\"http://www.dfi.dk/FaktaOmFilm/Nationalfilmografien/nfperson.aspx?id=$nr\")";
 
-	$result = mysql_query($query, $connection);
+	$result = $connection->query($query);
 	if($result===false)
 		echo "$query\n";
 
 	$antal=0;
-	while ($row = mysql_fetch_row($result)) {
-		$wlink=$row[0];
-		if(!isset($falsk_positiv_person["$nr"]["$wlink"])) {
-			$note_person["$antal"]=$row[0];
-			$url=$row[1];
+	while ($row = $result->fetch_object()) {
+		if(!isset($falsk_positiv_titel["$nr"]["$row->page_title"])) {
+			$note_titel["$antal"]=$row->page_title;
+			$url=$row->el_to;
 			$antal++;
 		}
 	}
@@ -204,23 +200,24 @@ from page
 where page_title = '" . addslashes(strtr($navn, ' ', '_')) . "'
 and page_namespace=0";
 
-	$result = mysql_query($query, $connection);
+	$result = $connection->query($query);
 	if($result===false)
 		echo "$query\n";
 
-	if ($row = mysql_fetch_row($result)) {
-		$link=$row[0];
-		if($row[1]) {
-			$rd_id=$row[2];
+	if ($row = $result->fetch_object()) {
+		$link=$row->page_title;
+		if($row->page_is_redirect) {
+			$rd_id=$row->page_id;
+
 			$query="select rd_title
 from redirect
 where rd_from = $rd_id";
 
-			$result = mysql_query($query, $connection);
+			$result = $connection->query($query);
 			if($result===false)
 				echo "$query\n";
-			if ($row = mysql_fetch_row($result))
-				$link=$row[0];
+			if ($row = $result->fetch_object())
+				$link=$row->rd_title;
 			else
 				die("redirect $rd_id mis\n");
 
@@ -278,13 +275,13 @@ where page_id=el_from
    and ( el_to=\"http://www.dfi.dk/faktaomfilm/nationalfilmografien/nffilm.aspx?id=" . $filmdata->ID . "\"
    or el_to=\"http://www.dfi.dk/FaktaOmFilm/Nationalfilmografien/nffilm.aspx?id=" . $filmdata->ID . "\")";
 
-	$result = mysql_query($query, $connection);
+	$result = $connection->query($query);
 	if($result===false)
 		echo "$query\n";
 
-	if ($row = mysql_fetch_row($result)) {
-		$link=$row[0];
-		$id=$row[1];
+	if ($row = $result->fetch_object()) {
+		$link=$row->page_title;
+		$id=$row->page_id;
 		$wikiurl="https://da.wikipedia.org/wiki/" . urlencode(strtr($link, ' ', '_'));
 		$slut="  Wikipedia: <a href=\"$wikiurl\">" . htmlentities(strtr($link, '_', ' '), ENT_COMPAT, "UTF-8") . "</a>";
 	} else {
@@ -294,15 +291,15 @@ from page
 where page_title = '" . addslashes(strtr($filmdata->Title, ' ', '_')) . "'
 and page_namespace=0";
 
-		$result = mysql_query($query, $connection);
+		$result = $connection->query($query);
 		if($result===false)
 			echo "$query\n";
 
-		if ($row = mysql_fetch_row($result)) {
+		if ($row = $result->fetch_object()) {
 			$wikiurl="https://da.wikipedia.org/wiki/" . urlencode(strtr($filmdata->Title, ' ', '_'));
 			$slut="&ndash; Wikipedia:  <a href=\"$wikiurl\">" . htmlentities($filmdata->Title, ENT_COMPAT, "UTF-8") . "</a> &ndash; {{Danmark Nationalfilmografi titel|" . $filmdata->ID . "}}";
-			$link=$row[0];
-			$id=$row[1];
+			$link=$row->page_title;
+			$id=$row->page_id;
 		} else {
 			$id=0;
 			$slut="  &mdash; {{Danmark Nationalfilmografi titel|" . $filmdata->ID . "}}";
@@ -375,11 +372,10 @@ and page_namespace=0";
 	}
 
 
-	$connection = mysql_connect($wiki_db_opsaet[$cur_database]['host'], $db_user, $db_passwd);
+	$connection = new mysqli($wiki_db_opsaet[$cur_database]['host'], $db_user, $db_passwd, $wiki_db_opsaet[$cur_database]['database']);
 	if($connection===false) {
 		die("ingen forbindelse til database\n");
 	}
-	mysql_select_db($wiki_db_opsaet[$cur_database]['database'], $connection);
 
 	if($jsonfil) {
 		$handle = fopen("$jsonfil", "r");
@@ -394,7 +390,7 @@ and page_namespace=0";
 
 	# format_film($testdata);
 
-	mysql_close($connection);
+	$connection->close();
 	if($dumpmode==0) { ?>
 </div>
 </body>
