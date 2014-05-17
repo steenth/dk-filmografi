@@ -168,7 +168,7 @@ where page_id=el_from
 
 	if($antal>1) {
 		echo "<li>duplet";
-		foreach($note_person as $cur_person) {
+		foreach($note_titel as $cur_person) {
 			$wikiurl="https://da.wikipedia.org/wiki/" . urlencode(strtr($cur_person, ' ', '_'));
 			echo " - \$falsk_positiv_titel[\"$nr\"][\"$cur_person\"] = 0; <a href=\"$wikiurl\">$cur_person</a>";	
 		}
@@ -177,7 +177,7 @@ where page_id=el_from
 	}
 
 	if($antal==1) {
-		$link=$note_person[0];
+		$link=$note_titel[0];
 		$wikiurl="https://da.wikipedia.org/wiki/" . urlencode(strtr($link, ' ', '_'));
 		echo "<a href=\"$wikiurl\">" . htmlentities(strtr($navn, '_', ' '), ENT_COMPAT, "UTF-8") . "</a>";
 		if(strtr($link, '_', ' ') != $navn)
