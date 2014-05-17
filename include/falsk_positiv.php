@@ -7,4 +7,5 @@
     $falsk_positiv_titel["16026"]["Danmarks_filmhistorie"] = 0;
     $falsk_positiv_titel["138"]["Aalholm"] = 0;
     $falsk_positiv_titel["74204"]["Ulrik_Langen"] = 0;
+    $falsk_positiv_titel["42911"]["Şaban_Özdoğan"] = 0;
 ?>
