@@ -259,6 +259,8 @@ $konv_rolletype["Wardrobe"] = "kostumer";
 $konv_rolletype["Makeup"] = "makeup"; 
 $konv_rolletype["Sound"] = "lyd";
 $konv_rolletype["Stunt"] = "Stunt";
+$konv_rolletype["Stunt"] = "Stunt";
+$konv_rolletype["Appearance"] = "Medvirkende";
 
 ###########################################################################
 
@@ -273,6 +275,7 @@ from page, externallinks
 where page_id=el_from
    and page_namespace=0
    and ( el_to=\"http://www.dfi.dk/faktaomfilm/nationalfilmografien/nffilm.aspx?id=" . $filmdata->ID . "\"
+   or el_to=\"http://www.dfi.dk/faktaomfilm/film/da/$filmdata->ID.aspx?id=$filmdata->ID\"
    or el_to=\"http://www.dfi.dk/FaktaOmFilm/Nationalfilmografien/nffilm.aspx?id=" . $filmdata->ID . "\")";
 
 	$result = $connection->query($query);
