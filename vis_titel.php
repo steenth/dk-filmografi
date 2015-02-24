@@ -6,6 +6,7 @@ include "password.php";
 include "tab/wiki_database_opsaet.php";
 include "include/vislinks.php";
 include "include/falsk_positiv.php";
+include "include/rolle.php";
 
 ###########################################################################
 
@@ -159,7 +160,7 @@ where page_id=el_from
 
 	$antal=0;
 	while ($row = $result->fetch_object()) {
-		if(!isset($falsk_positiv_titel["$nr"]["$row->page_title"])) {
+		if(!isset($falsk_positiv_person["$nr"]["$row->page_title"])) {
 			$note_titel["$antal"]=$row->page_title;
 			$url=$row->el_to;
 			$antal++;
@@ -170,7 +171,7 @@ where page_id=el_from
 		echo "<li>duplet";
 		foreach($note_titel as $cur_person) {
 			$wikiurl="https://da.wikipedia.org/wiki/" . urlencode(strtr($cur_person, ' ', '_'));
-			echo " - \$falsk_positiv_titel[\"$nr\"][\"$cur_person\"] = 0; <a href=\"$wikiurl\">$cur_person</a>";	
+			echo " - \$falsk_positiv_person[\"$nr\"][\"$cur_person\"] = 0; <a href=\"$wikiurl\">$cur_person</a>";	
 		}
 		echo " - <a href=\"" . $url . "\">" . $nr . "</a>\n";
 		return 0;
@@ -244,6 +245,7 @@ where rd_from = $rd_id";
 
 ###########################################################################
 
+<<<<<<< HEAD
 $konv_rolletype["Script"] = "manuscript";
 $konv_rolletype["Direction"] = "instruktion";
 $konv_rolletype["Cinematography"] = "foto";
@@ -264,6 +266,8 @@ $konv_rolletype["Appearance"] = "Medvirkende";
 
 ###########################################################################
 
+=======
+>>>>>>> 29e1bde8c155bf050cffd7732e45fb8348cd3d0e
 function format_film($filmdata_ind)
 {
 global $konv_rolletype, $connection, $linkstatus;

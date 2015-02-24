@@ -6,6 +6,7 @@ include "password.php";
 include "tab/wiki_database_opsaet.php";
 include "include/vislinks.php";
 include "include/falsk_positiv.php";
+include "include/rolle.php";
 
 ###########################################################################
 
@@ -291,19 +292,6 @@ where page_id=pl_from
 		echo "<p>Titler som mangler: $liste</p>\n";
 
 }
-
-###########################################################################
-
-$konv_rolletype["Script"] = "manuscript";
-$konv_rolletype["Direction"] = "instruktion";
-$konv_rolletype["Cinematography"] = "foto";
-$konv_rolletype["Editing"] = "klipning";
-$konv_rolletype["Music"] = "musik";
-$konv_rolletype["Production design"] = "produktionsdesign";
-$konv_rolletype["Actors"] = "skuespiller";
-$konv_rolletype["Stills"] = "stills";
-$konv_rolletype["Medvirkende"] = "medvirkende";
-$konv_rolletype["Stemme"] = "stemme";
 
 ###########################################################################
 
