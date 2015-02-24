@@ -1,5 +1,6 @@
 <?
 $konv_rolletype["Actors"] = "skuespiller";
+$konv_rolletype["Appearance"] = "Medvirkende";
 $konv_rolletype["Cinematography"] = "foto";
 $konv_rolletype["Direction"] = "instruktion";
 $konv_rolletype["Editing"] = "klipning";
