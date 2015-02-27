@@ -12,6 +12,7 @@
 
     # faste
     $falsk_positiv_person["114644"]["Fyrtårnet_og_Bivognen"] = 0;
+    $falsk_positiv_person["114093"]["Fyrtårnet_og_Bivognen"] = 0;
     $falsk_positiv_person["129181"]["Kørsel_med_grønlandske_Hunde"] = 0;
     $falsk_positiv_titel["15652"]["Oda_Pasborg"] = 0; 
     $falsk_positiv_titel["33"]["Søren_Stærmose"] = 0;
