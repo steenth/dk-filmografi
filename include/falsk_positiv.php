@@ -19,5 +19,5 @@
 
     $falsk_positiv_person["114644"]["Carl_Schenstrøm"] = 0;
     $falsk_positiv_person["1928"]["Jørgen_Klubien"] = 0;
-
+    $falsk_positiv_person["127598"]["Faldskærm"] = 0;
 ?>
