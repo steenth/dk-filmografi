@@ -20,4 +20,9 @@
     $falsk_positiv_person["114644"]["Carl_Schenstrøm"] = 0;
     $falsk_positiv_person["1928"]["Jørgen_Klubien"] = 0;
     $falsk_positiv_person["127598"]["Faldskærm"] = 0;
+    $falsk_positiv_titel["6190"]["Poltergeist_(filmserie)"] = 0;
+    $falsk_positiv_titel["38187"]["Underworld_(filmserie)"] = 0;
+    $falsk_positiv_titel["79263"]["Underworld_(filmserie)"] = 0;
+    $falsk_positiv_titel["86542"]["Marie_Højgaard_Andersen"] = 0;
+    $falsk_positiv_titel["82319"]["Poul_Brink_(journalist)"] = 0;
 ?>
