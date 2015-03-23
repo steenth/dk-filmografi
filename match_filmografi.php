@@ -5,9 +5,10 @@
 
 	$cur_database = "dawiki";
 
-	$opts = getopt("d:S:i");
+	$opts = getopt("d:S:iv");
 	$sektion = "film";
 	$ikke_match=0;
+	$verbose=0;
 
 	foreach (array_keys($opts) as $opt) switch ($opt) {
 	case 'd':
@@ -22,6 +23,7 @@
 	    $sektion = $opts['S'];
 	    break;
 	case 'i': $ikke_match=1; break;
+	case 'v': $verbose=1; break;
 	default:
 		echo "fejl: optfejl $opt\n";
 		exit(1);
@@ -45,6 +47,15 @@
 		# echo "xx $row->page_title $link\n";
 		if(preg_match("#http://www.dfi.dk/[Ff]akta[Oo]m[Ff]ilm/[Nn]ationalfilmografien/nffilm.aspx\?id=([0-9]*)#", $row->el_to, $opdel)) {
 			$cur_nr=$opdel[1];
+			if($verbose) {
+				if(isset($falsk_positiv_titel["$cur_nr"]["$row->page_title"])) {}
+				else if(isset($falsk_positiv_titel["$cur_nr"])) {
+					echo "ok positiv titel $row->page_title - ";
+					foreach($falsk_positiv_titel["$cur_nr"] as $cur_val=>$xx)
+						echo " $cur_val";
+					echo " - $row->el_to\n";
+				}
+			}
 			if(isset($falsk_positiv_titel["$cur_nr"]["$row->page_title"])) {}
 			else if(isset($film_nr["$cur_nr"]) && $row->page_title!= $film_nr["$cur_nr"]) {
 				echo "* dobbel [[" .strtr($film_nr["$cur_nr"], '_', ' '). "]] og [[" . strtr($row->page_title, '_', ' ') . "]] for [$row->el_to $cur_nr]\n"; 
@@ -55,6 +66,15 @@
 		}
 		else if(preg_match("#http://www.dfi.dk/faktaomfilm/film/da/[0-9]+.aspx\?id=([0-9]+)#", $row->el_to, $opdel)) {
 			$cur_nr=$opdel[1];
+			if($verbose) {
+				if(isset($falsk_positiv_titel["$cur_nr"]["$row->page_title"])) {}
+				else if(isset($falsk_positiv_titel["$cur_nr"])) {
+					echo "ok positiv titel $row->page_title - ";
+					foreach($falsk_positiv_titel["$cur_nr"] as $cur_val=>$xx)
+						echo " $cur_val";
+					echo " - $row->el_to\n";
+				}
+			}
 			if(isset($falsk_positiv_titel["$cur_nr"]["$row->page_title"])) {}
 			else if(isset($film_nr["$cur_nr"]) && $row->page_title!=$film_nr["$cur_nr"]) {
 				echo "* dobbel [[" .strtr($film_nr["$cur_nr"], '_', ' '). "]] og [[" . strtr($row->page_title, '_', ' ') . "]] for [$row->el_to $cur_nr]\n"; 
@@ -65,6 +85,15 @@
 		}
 		else if(preg_match("#http://www.dfi.dk/[Ff]akta[Oo]m[Ff]ilm/[Nn]ationalfilmografien/nfperson.aspx\?id=([0-9]*)#", $row->el_to, $opdel)) {
 			$cur_nr=$opdel[1];
+			if($verbose) {
+				if(isset($falsk_positiv_person["$cur_nr"]["$row->page_title"])) {}
+				else if(isset($falsk_positiv_person["$cur_nr"])) {
+					echo "ok positiv person $row->page_title - ";
+					foreach($falsk_positiv_person["$cur_nr"] as $cur_val=>$xx)
+						echo " $cur_val";
+					echo " - $row->el_to\n";
+				}
+			}
 			if(isset($falsk_positiv_person["$cur_nr"]["$row->page_title"])) {}
 			else if(isset($person_nr["$cur_nr"])) {
 				echo "* dobbel [[" . strtr($person_nr["$cur_nr"], '_', ' '). "]] og [[" . strtr($row->page_title, '_', ' ') . "]] for [$row->el_to $cur_nr]\n";

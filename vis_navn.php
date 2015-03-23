@@ -297,7 +297,7 @@ where page_id=pl_from
 
 function format_person($filmdata_ind)
 {
-global $konv_rolletype, $connection, $linkstatus;
+global $konv_rolletype, $connection, $linkstatus, $falsk_positiv_person, $verbose;
 
 	$filmdata=json_decode($filmdata_ind);
 
@@ -312,12 +312,22 @@ where page_id=el_from
 	if($result===false)
 		echo "$query\n";
 
-	if ($row = $result->fetch_object()) {
-		$link=$row->page_title;
-		$id=$row->page_id;
-		$wikiurl="https://da.wikipedia.org/wiki/" . urlencode(strtr($link, ' ', '_'));
-		$slut="  Wikipedia: <a href=\"$wikiurl\">" . htmlentities(strtr($link, '_', ' '), ENT_COMPAT, "UTF-8") . "</a>";
-	} else {
+	while ($row = $result->fetch_object()) {
+		if(isset($falsk_positiv_person["$filmdata->ID"]["$row->page_title"])) {
+			if($verbose)
+				echo "skip $filmdata->ID $row->page_title\n";
+		}
+		else {
+			if($verbose)
+				echo "følg: $filmdata->ID $row->page_title\n";
+			$link=$row->page_title;
+			$id=$row->page_id;
+			$wikiurl="https://da.wikipedia.org/wiki/" . urlencode(strtr($link, ' ', '_'));
+			$slut="  Wikipedia: <a href=\"$wikiurl\">" . htmlentities(strtr($link, '_', ' '), ENT_COMPAT, "UTF-8") . "</a>";
+		}
+	}
+
+	if(!isset($id)) {
 
 		$query="select page_title, page_id
 from page
