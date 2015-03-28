@@ -160,11 +160,14 @@ where page_id=el_from
 		echo "$query\n";
 
 	$antal=0;
+	$last_titel="xdfdfsd";
 	while ($row = $result->fetch_object()) {
-		if(!isset($falsk_positiv_titel["$nr"]["$row->page_title"])) {
+		if($last_titel==$row->page_title) {} # håndere samme titel forskel url til dfi
+		else if(!isset($falsk_positiv_titel["$nr"]["$row->page_title"])) {
 			$note_titel["$antal"]=$row->page_title;
-			$url=$row->el_to;
+			$ind_url=$row->el_to;
 			$antal++;
+			$last_titel=$row->page_title;
 		}
 	}
 
@@ -174,7 +177,7 @@ where page_id=el_from
 			$wikiurl="https://da.wikipedia.org/wiki/" . urlencode(strtr($cur_titel, ' ', '_'));
 			echo " - \$falsk_positiv_titel[\"$nr\"][\"$cur_titel\"] = 0; <a href=\"$wikiurl\">$cur_titel</a>";	
 		}
-		echo " - <a href=\"" . $url . "\">" . $nr . "</a>\n";
+		echo " - <a href=\"" . $ind_url . "\">" . $nr . "</a>\n";
 		return 0;
 	}
 
