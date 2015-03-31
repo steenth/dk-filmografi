@@ -5,8 +5,7 @@
 
 	$cur_database = "dawiki";
 
-	$opts = getopt("d:S:iv");
-	$sektion = "film";
+	$opts = getopt("d:iv");
 	$ikke_match=0;
 	$verbose=0;
 
@@ -18,9 +17,6 @@
 		echo "database $cur_database findes ikke\n";
 		exit(1);
 	    }
-	    break;
-	case 'S':
-	    $sektion = $opts['S'];
 	    break;
 	case 'i': $ikke_match=1; break;
 	case 'v': $verbose=1; break;
@@ -45,8 +41,8 @@
 	while ($row = $result->fetch_object())
 	{
 		# echo "xx $row->page_title $link\n";
-		if(preg_match("#http://www.dfi.dk/[Ff]akta[Oo]m[Ff]ilm/[Nn]ationalfilmografien/nffilm.aspx\?id=([0-9]*)#", $row->el_to, $opdel)) {
-			$cur_nr=$opdel[1];
+		if(preg_match("#http://www.dfi.dk/[Ff]akta[Oo]m[Ff]ilm/([Nn]ationalfilmografien/nffilm.aspx|film/(da|en)/[0-9]+.aspx)\?id=(?<id>[0-9]+)#", $row->el_to, $opdel)) {
+			$cur_nr=$opdel['id'];
 			if($verbose) {
 				if(isset($falsk_positiv_titel["$cur_nr"]["$row->page_title"])) {}
 				else if(isset($falsk_positiv_titel["$cur_nr"])) {
@@ -56,6 +52,7 @@
 					echo " - $row->el_to\n";
 				}
 			}
+
 			if(isset($falsk_positiv_titel["$cur_nr"]["$row->page_title"])) {}
 			else if(isset($film_nr["$cur_nr"]) && $row->page_title!= $film_nr["$cur_nr"]) {
 				echo "* dobbel [[" .strtr($film_nr["$cur_nr"], '_', ' '). "]] og [[" . strtr($row->page_title, '_', ' ') . "]] for [$row->el_to $cur_nr]\n"; 
@@ -64,27 +61,8 @@
 			} else
 				$film_nr["$cur_nr"] = $row->page_title;
 		}
-		else if(preg_match("#http://www.dfi.dk/faktaomfilm/film/da/[0-9]+.aspx\?id=([0-9]+)#", $row->el_to, $opdel)) {
-			$cur_nr=$opdel[1];
-			if($verbose) {
-				if(isset($falsk_positiv_titel["$cur_nr"]["$row->page_title"])) {}
-				else if(isset($falsk_positiv_titel["$cur_nr"])) {
-					echo "ok positiv titel $row->page_title - ";
-					foreach($falsk_positiv_titel["$cur_nr"] as $cur_val=>$xx)
-						echo " $cur_val";
-					echo " - $row->el_to\n";
-				}
-			}
-			if(isset($falsk_positiv_titel["$cur_nr"]["$row->page_title"])) {}
-			else if(isset($film_nr["$cur_nr"]) && $row->page_title!=$film_nr["$cur_nr"]) {
-				echo "* dobbel [[" .strtr($film_nr["$cur_nr"], '_', ' '). "]] og [[" . strtr($row->page_title, '_', ' ') . "]] for [$row->el_to $cur_nr]\n"; 
-				echo "    \$falsk_positiv_titel[\"$cur_nr\"][\"$row->page_title\"] = 0;\n";
-				echo "    \$falsk_positiv_titel[\"$cur_nr\"][\"" . $film_nr["$cur_nr"] . "\"] = 0;\n";
-			} else
-				$film_nr["$cur_nr"] = $row->page_title;
-		}
-		else if(preg_match("#http://www.dfi.dk/[Ff]akta[Oo]m[Ff]ilm/[Nn]ationalfilmografien/nfperson.aspx\?id=([0-9]*)#", $row->el_to, $opdel)) {
-			$cur_nr=$opdel[1];
+		else if(preg_match("#http://www.dfi.dk/[Ff]akta[Oo]m[Ff]ilm/([Nn]ationalfilmografien/nfperson.aspx|person/(da|en)/[0-9]+.aspx)\?id=(?<id>[0-9]+)#", $row->el_to, $opdel)) {
+			$cur_nr=$opdel['id'];
 			if($verbose) {
 				if(isset($falsk_positiv_person["$cur_nr"]["$row->page_title"])) {}
 				else if(isset($falsk_positiv_person["$cur_nr"])) {
@@ -94,8 +72,9 @@
 					echo " - $row->el_to\n";
 				}
 			}
+
 			if(isset($falsk_positiv_person["$cur_nr"]["$row->page_title"])) {}
-			else if(isset($person_nr["$cur_nr"])) {
+			else if(isset($person_nr["$cur_nr"]) && $row->page_title!= $person_nr["$cur_nr"]) {
 				echo "* dobbel [[" . strtr($person_nr["$cur_nr"], '_', ' '). "]] og [[" . strtr($row->page_title, '_', ' ') . "]] for [$row->el_to $cur_nr]\n";
 				echo "    \$falsk_positiv_person[\"$cur_nr\"][\"$row->page_title\"] = 0;\n";
 				echo "    \$falsk_positiv_person[\"$cur_nr\"][\"" . $person_nr["$cur_nr"] . "\"] = 0;\n";
