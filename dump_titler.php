@@ -5,10 +5,7 @@
 
 	$cur_database = "dawiki";
 
-	$opts = getopt("d:S:iv");
-	$sektion = "film";
-	$ikke_match=0;
-	$verbose=0;
+	$opts = getopt("d:");
 
 	foreach (array_keys($opts) as $opt) switch ($opt) {
 	case 'd':
@@ -19,11 +16,6 @@
 		exit(1);
 	    }
 	    break;
-	case 'S':
-	    $sektion = $opts['S'];
-	    break;
-	case 'i': $ikke_match=1; break;
-	case 'v': $verbose=1; break;
 	default:
 		echo "fejl: optfejl $opt\n";
 		exit(1);
@@ -42,11 +34,10 @@
 		exit(1);
 	}
 
-	while ($row = $result->fetch_object())
-	{
+	while ($row = $result->fetch_object()) {
 		# echo "xx $row->page_title $link\n";
-		if(preg_match("#http://www.dfi.dk/[Ff]akta[Oo]m[Ff]ilm/[Nn]ationalfilmografien/nffilm.aspx\?id=([0-9]*)#", $row->el_to, $opdel)) {
-			$cur_nr=$opdel[1];
+		if(preg_match("#http://www.dfi.dk/[Ff]akta[Oo]m[Ff]ilm/([Nn]ationalfilmografien/nffilm.aspx|film/(da|en)/[0-9]+.aspx)\?id=(?<id>[0-9]+)#", $row->el_to, $opdel)) {
+			$cur_nr=$opdel['id'];
 			if(isset($falsk_positiv_titel["$cur_nr"]["$row->page_title"])) {}
 			else if(isset($film_nr["$cur_nr"]) && $row->page_title!= $film_nr["$cur_nr"]) {}
 			else {
@@ -54,33 +45,6 @@
 				echo "$cur_nr $row->page_title\n";
 			}
 		}
-		else if(preg_match("#http://www.dfi.dk/faktaomfilm/film/da/[0-9]+.aspx\?id=([0-9]+)#", $row->el_to, $opdel)) {
-			$cur_nr=$opdel[1];
-			if(isset($falsk_positiv_titel["$cur_nr"]["$row->page_title"])) {}
-			else if(isset($film_nr["$cur_nr"]) && $row->page_title!=$film_nr["$cur_nr"]) {}
-			else {
-				$film_nr["$cur_nr"] = $row->page_title;
-				echo "$cur_nr $row->page_title\n";
-			}
-		}
-		else if(preg_match("#http://www.dfi.dk/[Ff]akta[Oo]m[Ff]ilm/[Nn]ationalfilmografien/nfperson.aspx\?id=([0-9]*)#", $row->el_to, $opdel)) {
-			$cur_nr=$opdel[1];
-			if(isset($falsk_positiv_person["$cur_nr"]["$row->page_title"])) {}
-			else if(isset($person_nr["$cur_nr"])) {
-			} else
-				$person_nr["$cur_nr"] = $row->page_title;
-		}
-		else if($ikke_match==0) {}
-		else if(preg_match("#http://www.dfi.dk/faktaomfilm/[Dd]anish[Ff]ilms/(dffilm|dfperson).aspx\?id=([0-9]*)#", $row->el_to, $opdel))
-		# http://www.dfi.dk/faktaomfilm/DanishFilms/dfperson.aspx?id=4677#
-		# http://www.dfi.dk/faktaomfilm/DanishFilms/dfperson.aspx?id=23297
-			echo "konv $row->page_title $row->el_to\n";
-		else if(preg_match("#http://www.dfi.dk/faktaomfilm/(film|person)/(da|en)/([0-9]*).aspx\?id=([0-9]*)#", $row->el_to, $opdel))
-			echo "konv $row->page_title $row->el_to\n";
-		# http://www.dfi.dk/faktaomfilm/film/da/71920.aspx?id=71920
-		# http://www.dfi.dk/faktaomfilm/person/da/88547.aspx?id=88547
-		else
-			echo "rest $row->page_title $row->el_to\n";
 	}
 
 	$connection->close();
