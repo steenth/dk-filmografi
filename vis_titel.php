@@ -152,6 +152,7 @@ from page, externallinks
 where page_id=el_from
    and page_namespace=0
    and ( el_to=\"http://www.dfi.dk/faktaomfilm/nationalfilmografien/nfperson.aspx?id=$nr\"
+   or el_to=\"http://www.dfi.dk/faktaomfilm/person/da/$nr.aspx?id=$nr\"
    or el_to=\"http://www.dfi.dk/FaktaOmFilm/Nationalfilmografien/nfperson.aspx?id=$nr\")";
 
 	$result = $connection->query($query);
@@ -159,11 +160,14 @@ where page_id=el_from
 		echo "$query\n";
 
 	$antal=0;
+	$last_navn="xdfdfsd";
 	while ($row = $result->fetch_object()) {
-		if(!isset($falsk_positiv_person["$nr"]["$row->page_title"])) {
+		if($last_navn==$row->page_title) {} # håndere samme titel forskel url til dfi
+		else if(!isset($falsk_positiv_person["$nr"]["$row->page_title"])) {
 			$note_titel["$antal"]=$row->page_title;
 			$url=$row->el_to;
 			$antal++;
+			$last_navn=$row->page_title;
 		}
 	}
 
