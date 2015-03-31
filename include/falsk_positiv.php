@@ -62,4 +62,10 @@
  $falsk_positiv_titel["5080"]["Sven_Hazel"] = 0;
  $falsk_positiv_titel["1174"]["Ulf_Pilgaard"] = 0;
  $falsk_positiv_titel["92024"]["Lars_Hjortshøj"] = 0;
+ $falsk_positiv_person["959"]["Retfærdighedens_rytter"] = 0;
+ $falsk_positiv_person["16026"]["Danmarks_filmhistorie"] = 0;
+ $falsk_positiv_person["89600"]["One_Hell_of_a_Christmas"] = 0;
+ $falsk_positiv_person["2215"]["Cy,_Maia_&_Robert"] = 0;
+ $falsk_positiv_titel["89603"]["Mikael_Colville-Andersen"] = 0;
+
 ?>
