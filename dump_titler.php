@@ -1,4 +1,4 @@
-<?
+<?php
 	include "password.php";
 	include "tab/wiki_database_opsaet.php";
 	include "include/falsk_positiv.php";

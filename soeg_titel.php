@@ -9,7 +9,7 @@
 </header>
 <body>
 <div class="wrapper">
-<?
+<?php
 	$opts = getopt("s:d:D");
 
 	if(isset($opts) && is_array($opts))

@@ -16,7 +16,7 @@ function vis_header($tekst)
 <!DOCTYPE HTML>
 <html>
 <header>
-<title><? echo htmlentities($tekst, ENT_COMPAT, "UTF-8") ?></title>
+<title><?php echo htmlentities($tekst, ENT_COMPAT, "UTF-8") ?></title>
     <meta name="language" content="DA" />
     <meta http-equiv="Content-Language" content="DA" />
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
@@ -24,7 +24,7 @@ function vis_header($tekst)
 </header>
 <body>
 <div class="wrapper">
-<?
+<?php
 	echo "<h1>" . htmlentities($tekst, ENT_COMPAT, "UTF-8") . "</h1>\n";
 }
 
@@ -451,5 +451,5 @@ and page_namespace=0";
 </div>
 </body>
 </html>
-<? }
+<?php }
 ?>

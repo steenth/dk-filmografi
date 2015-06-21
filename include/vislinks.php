@@ -1,4 +1,4 @@
-<?
+<?php
 function handtere_links($id)
 {
 global $connection;

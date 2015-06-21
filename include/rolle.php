@@ -1,4 +1,4 @@
-<?
+<?php
 $konv_rolletype["Actors"] = "skuespiller";
 $konv_rolletype["Appearance"] = "Medvirkende";
 $konv_rolletype["Cinematography"] = "foto";
