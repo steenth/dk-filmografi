@@ -68,5 +68,4 @@
  $falsk_positiv_person["2215"]["Cy,_Maia_&_Robert"] = 0;
  $falsk_positiv_titel["89603"]["Mikael_Colville-Andersen"] = 0;
  $falsk_positiv_titel["50561"]["Jesper_Nyeland_Andersen"] = 0;
-
 ?>
