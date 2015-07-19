@@ -5,9 +5,10 @@
 
 	$cur_database = "dawiki";
 
-	$opts = getopt("d:iv");
+	$opts = getopt("d:ivD");
 	$ikke_match=0;
 	$verbose=0;
+	$vis_dobbel=0;
 
 	foreach (array_keys($opts) as $opt) switch ($opt) {
 	case 'd':
@@ -20,6 +21,7 @@
 	    break;
 	case 'i': $ikke_match=1; break;
 	case 'v': $verbose=1; break;
+	case 'D': $vis_dobbel=1; break;
 	default:
 		echo "fejl: optfejl $opt\n";
 		exit(1);
@@ -58,7 +60,12 @@
 				echo "* dobbel [[" .strtr($film_nr["$cur_nr"], '_', ' '). "]] og [[" . strtr($row->page_title, '_', ' ') . "]] for [$row->el_to $cur_nr]\n"; 
 				echo "    \$falsk_positiv_titel[\"$cur_nr\"][\"$row->page_title\"] = 0;\n";
 				echo "    \$falsk_positiv_titel[\"$cur_nr\"][\"" . $film_nr["$cur_nr"] . "\"] = 0;\n";
-			} else
+				if($vis_dobbel) {
+					echo "dobbeltitel $cur_nr $row->page_title\n";
+					echo "dobbeltitel $cur_nr " . $film_nr["$cur_nr"] . "\n";
+				}
+			}
+			else
 				$film_nr["$cur_nr"] = $row->page_title;
 		}
 		else if(preg_match("#http://www.dfi.dk/[Ff]akta[Oo]m[Ff]ilm/([Nn]ationalfilmografien/nfperson.aspx|person/(da|en)/[0-9]+.aspx)\?id=(?<id>[0-9]+)#", $row->el_to, $opdel)) {
