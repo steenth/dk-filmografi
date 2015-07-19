@@ -70,4 +70,5 @@
  $falsk_positiv_titel["50561"]["Jesper_Nyeland_Andersen"] = 0;
 $falsk_positiv_titel["54290"]["Next_Stop_Nevada"] = 0;
 $falsk_positiv_titel["53400"]["Pelle_Møller"] = 0;
+$falsk_positiv_titel["77000"]["Pelle_Møller"] = 0;
 ?>
