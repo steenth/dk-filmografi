@@ -72,4 +72,6 @@ $falsk_positiv_titel["54290"]["Next_Stop_Nevada"] = 0;
 $falsk_positiv_titel["53400"]["Pelle_Møller"] = 0;
 $falsk_positiv_titel["77000"]["Pelle_Møller"] = 0;
 $falsk_positiv_titel["359"]["Vagn_William_Andersen"] = 0;
+$falsk_positiv_titel["49400"]["Janus_Metz_Pedersen"] = 0;
+    $falsk_positiv_person["1065"]["Kirsten_Lehfeldt"] = 0;
 ?>
