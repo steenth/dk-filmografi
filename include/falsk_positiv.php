@@ -74,4 +74,7 @@ $falsk_positiv_titel["77000"]["Pelle_Møller"] = 0;
 $falsk_positiv_titel["359"]["Vagn_William_Andersen"] = 0;
 $falsk_positiv_titel["49400"]["Janus_Metz_Pedersen"] = 0;
     $falsk_positiv_person["1065"]["Kirsten_Lehfeldt"] = 0;
+    $falsk_positiv_titel["15442"]["Johannes_V._Jensen"] = 0;
+    $falsk_positiv_person["127945"]["Pige_træd_varsomt"] = 0;
+    $falsk_positiv_titel["14557"]["Drømmeland"] = 0;
 ?>
