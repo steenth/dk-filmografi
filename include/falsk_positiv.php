@@ -77,4 +77,6 @@ $falsk_positiv_titel["49400"]["Janus_Metz_Pedersen"] = 0;
     $falsk_positiv_titel["15442"]["Johannes_V._Jensen"] = 0;
     $falsk_positiv_person["127945"]["Pige_træd_varsomt"] = 0;
     $falsk_positiv_titel["14557"]["Drømmeland"] = 0;
+    $falsk_positiv_titel["37848"]["Blot_en_drengestreg"] = 0;
+    $falsk_positiv_person["6208"]["Berygtet"] = 0;
 ?>
