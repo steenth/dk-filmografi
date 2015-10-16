@@ -79,4 +79,12 @@ $falsk_positiv_titel["49400"]["Janus_Metz_Pedersen"] = 0;
     $falsk_positiv_titel["14557"]["Drømmeland"] = 0;
     $falsk_positiv_titel["37848"]["Blot_en_drengestreg"] = 0;
     $falsk_positiv_person["6208"]["Berygtet"] = 0;
+$falsk_positiv_titel["15442"]["Gudrun"] = 0;
+$falsk_positiv_titel["2669"]["Poltergeist_(filmserie)"] = 0;
+$falsk_positiv_titel["5370"]["Poltergeist_(filmserie)"] = 0;
+$falsk_positiv_titel["6190"]["Poltergeist_(filmserie)"] = 0;
+    $falsk_positiv_titel["15442"]["Gudrun"] = 0;
+
+
+
 ?>
