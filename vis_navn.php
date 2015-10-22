@@ -145,7 +145,7 @@ and p2.page_namespace=0";
 
 function tjk_titel($navn, $nr)
 {
-global $connection, $fra_link, $til_link, $til_link_brugt, $linkstatus, $res, $falsk_positiv_titel;
+global $connection, $fra_link, $til_link, $til_link_brugt, $linkstatus, $res, $falsk_positiv_titel, $mangler_match;
 
 	$query="select page_title, el_to
 from page, externallinks
@@ -189,8 +189,11 @@ where page_id=el_from
 		else
 			echo "<a href=\"$wikiurl\">" . htmlentities(strtr($link, '_', ' '), ENT_COMPAT, "UTF-8") . "</a>";
 
-		if(strtr($link, '_', ' ') != $navn)
+		if(strtr($link, '_', ' ') != $navn) {
 			echo " (D)";
+			$vis_link=strtr($link, '_', ' ') . "|" . strtr($navn, '_', ' ');
+		} else
+			$vis_link=strtr($link, '_', ' ');
 
 		if(isset($til_link["$link"]))
 			$til_link_brugt["$link"]=1;
@@ -199,12 +202,16 @@ where page_id=el_from
 			$linkstatus=" - link ok";
 		else if(isset($til_link["$link"]))
 			$linkstatus=" - kun link til titel findes";
-		else if(isset($fra_link["$link"]))
+		else if(isset($fra_link["$link"])) {
 			$linkstatus=" - kun link fra titel findes";
+			$mangler_match .= "* [[$vis_link]]\n";
+		}
 		else if(!isset($fra_link) && !isset($til_link))
 			$linkstatus="";
-		else
+		else {
 			$linkstatus=" - ingen link imellem titel og person";
+			$mangler_match .= "* [[$vis_link]]\n";
+		}
 		return 0;
 	}
 
@@ -247,12 +254,16 @@ where rd_from = $rd_id";
 			$linkstatus=" - link ok";
 		else if(isset($til_link["$link"]))
 			$linkstatus=" - kun link til titel findes";
-		else if(isset($fra_link["$link"]))
+		else if(isset($fra_link["$link"])) {
 			$linkstatus=" - kun link fra titel findes";
+			$mangler_match .= "* [[" . strtr($link, '_', ' ') . "]]\n";
+		}
 		else if(!isset($fra_link) && !isset($til_link))
 			$linkstatus="";
-		else
+		else {
 			$linkstatus=" - ingen link imellem titel og person";
+			$mangler_match .= "* [[" . strtr($link, '_', ' ') . "]]\n";
+		}
 		return 1;
 	}
 	echo htmlentities($navn, ENT_COMPAT, "UTF-8");
@@ -300,7 +311,7 @@ where page_id=pl_from
 
 function format_person($filmdata_ind)
 {
-global $konv_rolletype, $connection, $linkstatus, $falsk_positiv_person, $verbose;
+global $konv_rolletype, $connection, $linkstatus, $falsk_positiv_person, $verbose, $mangler_match;
 
 	$filmdata=json_decode($filmdata_ind);
 
@@ -386,6 +397,8 @@ and page_namespace=0";
 
 	echo "<p>Kilde <a href=\"http://www.dfi.dk/faktaomfilm/nationalfilmografien/nfperson.aspx?id=" . $filmdata->ID . "\">DFI filmdata</a>\n";
 	echo "$slut" . handtere_links($id) . "</p>\n";
+	if($mangler_match)
+		echo "<h3>Links som mangler</h3><pre>\n$mangler_match</pre>\n";
 }
 
 ###########################################################################
@@ -398,6 +411,7 @@ and page_namespace=0";
 	$dumpmode=0;
 	$verbose=0;
 	$res = 0;
+	$mangler_match = "";
 
 	if(isset($opts) && is_array($opts))
 	foreach (array_keys($opts) as $opt) switch ($opt) {
