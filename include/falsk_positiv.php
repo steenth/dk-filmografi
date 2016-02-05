@@ -84,7 +84,9 @@ $falsk_positiv_titel["2669"]["Poltergeist_(filmserie)"] = 0;
 $falsk_positiv_titel["5370"]["Poltergeist_(filmserie)"] = 0;
 $falsk_positiv_titel["6190"]["Poltergeist_(filmserie)"] = 0;
     $falsk_positiv_titel["15442"]["Gudrun"] = 0;
-
-
+     $falsk_positiv_titel["32850"]["Svend_Åge_Madsen_-_at_fortælle_menneskene"] = 0;
+     $falsk_positiv_titel["77254"]["Daniel_Dencik"] = 0;
+     $falsk_positiv_titel["53361"]["Nicole_N._Horanyi"] = 0;
+     $falsk_positiv_person["32"]["Kim_Larsen"] = 0;
 
 ?>
