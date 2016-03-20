@@ -88,5 +88,9 @@ $falsk_positiv_titel["6190"]["Poltergeist_(filmserie)"] = 0;
      $falsk_positiv_titel["77254"]["Daniel_Dencik"] = 0;
      $falsk_positiv_titel["53361"]["Nicole_N._Horanyi"] = 0;
      $falsk_positiv_person["32"]["Kim_Larsen"] = 0;
+$falsk_positiv_titel["31113"]["Gunnvá_Zachariasen"] = 0;
+$falsk_positiv_titel["41415"]["Sorten_Muld"] = 0;
+$falsk_positiv_titel["8872"]["Kim_Larsen"] = 0;
+$falsk_positiv_titel["90505"]["Peter_Wessel_Tordenskiold"] = 0;
 
 ?>
