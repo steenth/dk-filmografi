@@ -92,5 +92,27 @@ $falsk_positiv_titel["31113"]["Gunnvá_Zachariasen"] = 0;
 $falsk_positiv_titel["41415"]["Sorten_Muld"] = 0;
 $falsk_positiv_titel["8872"]["Kim_Larsen"] = 0;
 $falsk_positiv_titel["90505"]["Peter_Wessel_Tordenskiold"] = 0;
+    $falsk_positiv_titel["11872"]["Morten_Korch"] = 0;
+    $falsk_positiv_titel["14684"]["Morten_Korch"] = 0;
+    $falsk_positiv_titel["14862"]["Morten_Korch"] = 0;
+    $falsk_positiv_titel["15207"]["Morten_Korch"] = 0;
+    $falsk_positiv_titel["15445"]["Morten_Korch"] = 0;
+    $falsk_positiv_titel["15472"]["Morten_Korch"] = 0;
+    $falsk_positiv_titel["15744"]["Morten_Korch"] = 0;
+    $falsk_positiv_titel["15744"]["Morten_Korch"] = 0;
+    $falsk_positiv_titel["15764"]["Morten_Korch"] = 0;
+    $falsk_positiv_titel["15765"]["Morten_Korch"] = 0;
+    $falsk_positiv_titel["15776"]["Morten_Korch"] = 0;
+    $falsk_positiv_titel["16026"]["Morten_Korch"] = 0;
+    $falsk_positiv_titel["16239"]["Morten_Korch"] = 0;
+    $falsk_positiv_titel["196"]["Morten_Korch"] = 0;
+    $falsk_positiv_titel["2"]["Morten_Korch"] = 0;
+    $falsk_positiv_titel["287"]["Morten_Korch"] = 0;
+    $falsk_positiv_titel["29210"]["Morten_Korch"] = 0;
+    $falsk_positiv_titel["325"]["Morten_Korch"] = 0;
+    $falsk_positiv_titel["9125"]["Morten_Korch"] = 0;
+    $falsk_positiv_titel["95"]["Morten_Korch"] = 0;
+    $falsk_positiv_titel["83608"]["Abdel_Aziz_Mahmoud"] = 0;
+    $falsk_positiv_titel["75374"]["Tobias_Lindholm"] = 0;
 
 ?>
