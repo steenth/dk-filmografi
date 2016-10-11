@@ -114,5 +114,8 @@ $falsk_positiv_titel["90505"]["Peter_Wessel_Tordenskiold"] = 0;
     $falsk_positiv_titel["95"]["Morten_Korch"] = 0;
     $falsk_positiv_titel["83608"]["Abdel_Aziz_Mahmoud"] = 0;
     $falsk_positiv_titel["75374"]["Tobias_Lindholm"] = 0;
+    $falsk_positiv_titel["25340"]["Glenten_(flyvemaskine)"] = 0;
+    $falsk_positiv_titel["25340"]["Robert_Svendsen"] = 0;
+    $falsk_positiv_titel["63660"]["Julie_Brochorst_Andersen"] = 0;
 
 ?>
