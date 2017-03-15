@@ -120,5 +120,7 @@ $falsk_positiv_titel["90505"]["Peter_Wessel_Tordenskiold"] = 0;
     $falsk_positiv_titel["289"]["Shu-bi-dua"] = 0;
     $falsk_positiv_titel["37900"]["Lyrskovgade"] = 0;
     $falsk_positiv_titel["96147"]["Besir_Zeciri"] = 0;
+     $falsk_positiv_titel["60840"]["Elias_Ehlers"] = 0;
+     $falsk_positiv_person["115085"]["Carlo_Jacobsen"] = 0;
 
 ?>
