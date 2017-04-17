@@ -152,7 +152,7 @@ from page, externallinks
 where page_id=el_from
    and page_namespace=0
    and ( el_to=\"http://www.dfi.dk/faktaomfilm/nationalfilmografien/nffilm.aspx?id=$nr\"
-   or el_to=\"http://www.dfi.dk/faktaomfilm/film/da/$nr.aspx?id=$nr\"
+   or el_to like \"http://www.dfi.dk/faktaomfilm/film/da/$nr.aspx%\"
    or el_to=\"http://www.dfi.dk/FaktaOmFilm/Nationalfilmografien/nffilm.aspx?id=$nr\")";
 
 	$result = $connection->query($query);
@@ -320,7 +320,7 @@ from page, externallinks
 where page_id=el_from
    and page_namespace=0
    and ( el_to=\"http://www.dfi.dk/faktaomfilm/nationalfilmografien/nfperson.aspx?id=" . $filmdata->ID . "\"
-   or el_to=\"http://www.dfi.dk/faktaomfilm/person/da/$filmdata->ID.aspx?id=$filmdata->ID\"
+   or el_to like \"http://www.dfi.dk/faktaomfilm/person/da/$filmdata->ID.aspx%\"
    or el_to=\"http://www.dfi.dk/FaktaOmFilm/Nationalfilmografien/nfperson.aspx?id=" . $filmdata->ID . "\")";
 
 	$result = $connection->query($query);
