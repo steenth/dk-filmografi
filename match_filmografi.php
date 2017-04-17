@@ -5,10 +5,11 @@
 
 	$cur_database = "dawiki";
 
-	$opts = getopt("d:ivD");
+	$opts = getopt("d:ivDL");
 	$ikke_match=0;
 	$verbose=0;
 	$vis_dobbel=0;
+	$vis_dobbel2=0;
 
 	foreach (array_keys($opts) as $opt) switch ($opt) {
 	case 'd':
@@ -22,6 +23,7 @@
 	case 'i': $ikke_match=1; break;
 	case 'v': $verbose=1; break;
 	case 'D': $vis_dobbel=1; break;
+	case 'L': $vis_dobbel2=1; break;
 	default:
 		echo "fejl: optfejl $opt\n";
 		exit(1);
@@ -43,7 +45,7 @@
 	while ($row = $result->fetch_object())
 	{
 		# echo "xx $row->page_title $link\n";
-		if(preg_match("#http://www.dfi.dk/[Ff]akta[Oo]m[Ff]ilm/([Nn]ationalfilmografien/nffilm.aspx|film/(da|en)/[0-9]+.aspx)\?id=(?<id>[0-9]+)#", $row->el_to, $opdel)) {
+		if(preg_match("#http://www.dfi.dk/[Ff]akta[Oo]m[Ff]ilm/([Nn]ationalfilmografien/nffilm.aspx|film/(da|en)/(?<id>[0-9]+).aspx)(\?id=[0-9]+)?#", $row->el_to, $opdel)) {
 			$cur_nr=$opdel['id'];
 			if($verbose) {
 				if(isset($falsk_positiv_titel["$cur_nr"]["$row->page_title"])) {}
@@ -64,6 +66,8 @@
 					echo "dobbeltitel $cur_nr $row->page_title\n";
 					echo "dobbeltitel $cur_nr " . $film_nr["$cur_nr"] . "\n";
 				}
+				if($vis_dobbel2)
+					echo "dobbeltitel $cur_nr $row->page_title " . $film_nr["$cur_nr"] . "\n";
 			}
 			else
 				$film_nr["$cur_nr"] = $row->page_title;
