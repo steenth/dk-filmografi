@@ -1,4 +1,4 @@
-<?
+<?php
 	# opsætning af dawiki-basen på wmflabs.org
 	$wiki_db_opsaet['dawiki']['database'] = 'dawiki_p';
 	$wiki_db_opsaet['dawiki']['host'] = 's3.labsdb';
