@@ -120,7 +120,15 @@ $falsk_positiv_titel["90505"]["Peter_Wessel_Tordenskiold"] = 0;
     $falsk_positiv_titel["289"]["Shu-bi-dua"] = 0;
     $falsk_positiv_titel["37900"]["Lyrskovgade"] = 0;
     $falsk_positiv_titel["96147"]["Besir_Zeciri"] = 0;
-     $falsk_positiv_titel["60840"]["Elias_Ehlers"] = 0;
-     $falsk_positiv_person["115085"]["Carlo_Jacobsen"] = 0;
+    $falsk_positiv_titel["60840"]["Elias_Ehlers"] = 0;
+    $falsk_positiv_person["115085"]["Carlo_Jacobsen"] = 0;
+
+    $falsk_positiv_titel["84922"]["Lars_Becker-Larsen"] = 0;
+    $falsk_positiv_titel["84922"]["Lars_Becker-Larsen"] = 0;
+    $falsk_positiv_titel["7"]["Michael_Kirkegaard"] = 0;
+    $falsk_positiv_titel["45639"]["Nicolai_Eigtved"] = 0;
+    $falsk_positiv_titel["16042"]["Klovnen"] = 0;
+    $falsk_positiv_titel["16042"]["Klovnen_(film_fra_1917)"] = 0;
+    $falsk_positiv_titel["29374"]["En_flygtning_krydser_sit_spor"] = 0;
 
 ?>
