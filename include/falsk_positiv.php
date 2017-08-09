@@ -130,5 +130,8 @@ $falsk_positiv_titel["90505"]["Peter_Wessel_Tordenskiold"] = 0;
     $falsk_positiv_titel["16042"]["Klovnen"] = 0;
     $falsk_positiv_titel["16042"]["Klovnen_(film_fra_1917)"] = 0;
     $falsk_positiv_titel["29374"]["En_flygtning_krydser_sit_spor"] = 0;
+    $falsk_positiv_person["1137"]["Døde_i_2013"] = 0;
+    $falsk_positiv_person["1890"]["Døde_i_2013"] = 0;
+    $falsk_positiv_person["3017"]["Døde_i_2013"] = 0;
 
 ?>
