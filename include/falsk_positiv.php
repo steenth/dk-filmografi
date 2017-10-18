@@ -134,5 +134,7 @@ $falsk_positiv_titel["90505"]["Peter_Wessel_Tordenskiold"] = 0;
     $falsk_positiv_person["1890"]["Døde_i_2013"] = 0;
     $falsk_positiv_person["3017"]["Døde_i_2013"] = 0;
     $falsk_positiv_titel["16094"]["Knud_Rasmussen"] = 0;
+    $falsk_positiv_titel["32987"]["Emmy_Drachmann"] = 0;
+    $falsk_positiv_titel["93928"]["Sine_Plambech"] = 0;
 
 ?>
