@@ -44,7 +44,24 @@ include "password.php";
 
 	// grab URL and pass it to the browser
 	$soegedata_ind=curl_exec($ch);
+	if($errno = curl_errno($ch)) {
+		$error_message = curl_strerror($errno);
+    		echo "cURL error ({$errno}):\n {$error_message}";
+	}
+
+	if($soegedata_ind===false) {
+		echo "Ingen data fra api'et\n";
+		return;
+	} else if($soegedata_ind=="") {
+		echo "Tom data fra api'et\n";
+		return;
+	}
+
 	$soegedata=json_decode($soegedata_ind);
+	if(!isset($soegedata->PersonList)) {
+		echo "Ingen data fundet\n";
+		return;
+	}
 
 	// close cURL resource, and free up system resources
 	curl_close($ch);
