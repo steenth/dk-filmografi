@@ -32,17 +32,33 @@ function vis_header($tekst)
 
 function hand_film($nr)
 {
-global $dumpmode;
+global $dumpmode, $dfi_user, $dfi_passwd;
 
 	$ch = curl_init();
 
 	// set URL and other appropriate options
-	curl_setopt($ch, CURLOPT_URL, "http://nationalfilmografien.service.dfi.dk/person.svc/json/$nr");
+	$url="https://api.dfi.dk/v1/person/$nr";
+	curl_setopt($ch, CURLOPT_URL, $url);
 	curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
 	curl_setopt($ch, CURLOPT_HEADER, 0);
+	curl_setopt($ch, CURLOPT_USERPWD, "$dfi_user:$dfi_passwd");
 
 	// grab URL and pass it to the browser
 	$filmdata_ind=curl_exec($ch);
+	if($errno = curl_errno($ch)) {
+		$error_message = curl_strerror($errno);
+    		echo "cURL error ({$errno}):\n {$error_message}";
+	}
+
+	if($filmdata_ind===false) {
+		echo "Ingen data fra api'et\n";
+		curl_close($ch);
+		return;
+	} else if($filmdata_ind=="") {
+		echo "Tom data fra api'et\n";
+		curl_close($ch);
+		return;
+	}
 
 	// close cURL resource, and free up system resources
 	curl_close($ch);
@@ -153,6 +169,7 @@ where page_id=el_from
    and page_namespace=0
    and ( el_to=\"http://www.dfi.dk/faktaomfilm/nationalfilmografien/nffilm.aspx?id=$nr\"
    or el_to like \"http://www.dfi.dk/faktaomfilm/film/da/$nr.aspx%\"
+   or el_to=\"https://www.dfi.dk/viden-om-film/filmdatabasen/film/$nr\"
    or el_to=\"http://www.dfi.dk/FaktaOmFilm/Nationalfilmografien/nffilm.aspx?id=$nr\")";
 
 	$result = $connection->query($query);
@@ -315,26 +332,32 @@ global $konv_rolletype, $connection, $linkstatus, $falsk_positiv_person, $verbos
 
 	$filmdata=json_decode($filmdata_ind);
 
+	if(!isset($filmdata->Id)) {
+		echo "Kan ikke finde Id i data\n";
+		return;
+	}
+
 	$query="select page_title, page_id
 from page, externallinks
 where page_id=el_from
    and page_namespace=0
-   and ( el_to=\"http://www.dfi.dk/faktaomfilm/nationalfilmografien/nfperson.aspx?id=" . $filmdata->ID . "\"
-   or el_to like \"http://www.dfi.dk/faktaomfilm/person/da/$filmdata->ID.aspx%\"
-   or el_to=\"http://www.dfi.dk/FaktaOmFilm/Nationalfilmografien/nfperson.aspx?id=" . $filmdata->ID . "\")";
+   and ( el_to=\"http://www.dfi.dk/faktaomfilm/nationalfilmografien/nfperson.aspx?id=" . $filmdata->Id . "\"
+   or el_to like \"http://www.dfi.dk/faktaomfilm/person/da/$filmdata->Id.aspx%\"
+   or el_to=\"https://www.dfi.dk/viden-om-film/filmdatabasen/person/" . $filmdata->Id . "\"
+   or el_to=\"http://www.dfi.dk/FaktaOmFilm/Nationalfilmografien/nfperson.aspx?id=" . $filmdata->Id . "\")";
 
 	$result = $connection->query($query);
 	if($result===false)
 		echo "$query\n";
 
 	while ($row = $result->fetch_object()) {
-		if(isset($falsk_positiv_person["$filmdata->ID"]["$row->page_title"])) {
+		if(isset($falsk_positiv_person["$filmdata->Id"]["$row->page_title"])) {
 			if($verbose)
-				echo "skip $filmdata->ID $row->page_title\n";
+				echo "skip $filmdata->Id $row->page_title\n";
 		}
 		else {
 			if($verbose)
-				echo "følg: $filmdata->ID $row->page_title\n";
+				echo "følg: $filmdata->Id $row->page_title\n";
 			$link=$row->page_title;
 			$id=$row->page_id;
 			$wikiurl="https://da.wikipedia.org/wiki/" . urlencode(strtr($link, ' ', '_'));
@@ -355,12 +378,12 @@ and page_namespace=0";
 
 		if ($row = $result->fetch_object()) {
 			$wikiurl="https://da.wikipedia.org/wiki/" . urlencode(strtr($filmdata->Name, ' ', '_'));
-			$slut="&ndash; Wikipedia:  <a href=\"$wikiurl\">" . htmlentities($filmdata->Name, ENT_COMPAT, "UTF-8") . "</a> &ndash; {{Danmark Nationalfilmografi navn|" . $filmdata->ID . "}}";
+			$slut="&ndash; Wikipedia:  <a href=\"$wikiurl\">" . htmlentities($filmdata->Name, ENT_COMPAT, "UTF-8") . "</a> &ndash; {{Danmark Nationalfilmografi navn|" . $filmdata->Id . "}}";
 			$link=$row->page_title;
 			$id=$row->page_id;
 		} else {
 			$id=0;
-			$slut="  &mdash; {{Danmark Nationalfilmografi navn|" . $filmdata->ID . "}}";
+			$slut="  &mdash; {{Danmark Nationalfilmografi navn|" . $filmdata->Id . "}}";
 		}
 	}
 	if($id)
@@ -374,10 +397,10 @@ and page_namespace=0";
 	}
 	echo "<h2>Filmografi</h2>";
 	echo "<ol>\n";
-	foreach($filmdata->Movies as $cur_movie) {
+	foreach($filmdata->FilmCredits as $cur_movie) {
 		$linkstatus="";
 		echo "<li>";
-		$vis_skabelon=tjk_titel($cur_movie->Name, $cur_movie->ID);
+		$vis_skabelon=tjk_titel($cur_movie->Title, $cur_movie->Id);
 		if(isset($cur_movie->Description))
 			if($filmdata->Description!="")
 				echo ", " . htmlentities($cur_movie->Description, ENT_COMPAT, "UTF-8");
@@ -386,16 +409,16 @@ and page_namespace=0";
 			echo ", " . $konv_rolletype["$cur_type"];
 		else
 			echo ", " . htmlentities($cur_movie->Type, ENT_COMPAT, "UTF-8") . "";
-		echo " (<a href=\"http://www.dfi.dk/faktaomfilm/nationalfilmografien/nffilm.aspx?id=" . $cur_movie->ID . "\">filmografi</a>, <a href=\"vis_titel.php?nr=" . $cur_movie->ID . "\">tjek titel</a>)";
+		echo " (<a href=\"https://www.dfi.dk/viden-om-film/filmdatabasen/film/" . $cur_movie->Id . "\">filmografi</a>, <a href=\"vis_titel.php?nr=" . $cur_movie->Id . "\">tjek titel</a>)";
 		if($vis_skabelon)
-			echo " &mdash; {{Danmark Nationalfilmografi titel|" . $cur_movie->ID . "}}";
+			echo " &mdash; {{Danmark Nationalfilmografi titel|" . $cur_movie->Id . "}}";
 		echo "$linkstatus</li>\n";
 	}
 	echo "</ol>\n";
 
 	tjk_ikkebrugt();
 
-	echo "<p>Kilde <a href=\"http://www.dfi.dk/faktaomfilm/nationalfilmografien/nfperson.aspx?id=" . $filmdata->ID . "\">DFI filmdata</a>\n";
+	echo "<p>Kilde <a href=\"https://www.dfi.dk/viden-om-film/filmdatabasen/person/" . $filmdata->Id . "\">DFI filmdata</a>\n";
 	echo "$slut" . handtere_links($id) . "</p>\n";
 	if($mangler_match)
 		echo "<h3>Links som mangler</h3><pre>\n$mangler_match</pre>\n";

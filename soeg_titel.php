@@ -10,6 +10,9 @@
 <body>
 <div class="wrapper">
 <?php
+
+include "password.php";
+
 	$opts = getopt("s:d:D");
 
 	if(isset($opts) && is_array($opts))
@@ -30,21 +33,41 @@
 	$ch = curl_init();
 
 	// set URL and other appropriate options
-	curl_setopt($ch, CURLOPT_URL, "http://nationalfilmografien.service.dfi.dk/movie.svc/json/list?titlecontains=" . urlencode($soeg));
+	$url="https://api.dfi.dk/v1/film?title=" . urlencode($soeg);
+	curl_setopt($ch, CURLOPT_URL, $url);
 	curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
 	curl_setopt($ch, CURLOPT_HEADER, 0);
+	curl_setopt($ch, CURLOPT_USERPWD, "$dfi_user:$dfi_passwd");
 
 	echo "<h1>Resultat på s&oslash;gning</h1>";
 	// grab URL and pass it to the browser
 	$soegedata_ind=curl_exec($ch);
+	if($errno = curl_errno($ch)) {
+		$error_message = curl_strerror($errno);
+    		echo "cURL error ({$errno}):\n {$error_message}";
+	}
+
+	if($soegedata_ind===false) {
+		echo "Ingen data fra api'et\n";
+		return;
+	} else if($soegedata_ind=="") {
+		echo "Tom data fra api'et\n";
+		return;
+	}
+
 	$soegedata=json_decode($soegedata_ind);
+	if(!isset($soegedata->FilmList)) {
+		echo "Ingen data fundet\n";
+		return;
+	}
+
 
 	// close cURL resource, and free up system resources
 	curl_close($ch);
 	# print_r($soegedata);
 	echo "<ul>\n";
-	foreach(array_keys($soegedata) as $cur_titel) {
-		echo "<li><a href=\"vis_titel.php?nr=" . $soegedata["$cur_titel"]->ID . "\">" . htmlentities($soegedata["$cur_titel"]->Name, ENT_COMPAT, "UTF-8") . "</a></li>\n";
+	foreach($soegedata->FilmList as $cur_titel) {
+		echo "<li><a href=\"vis_titel.php?nr=" . $cur_titel->Id . "\">" . htmlentities($cur_titel->Title, ENT_COMPAT, "UTF-8") . "</a></li>\n";
 	}
 	echo "</ul>\n";
 ?>
