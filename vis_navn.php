@@ -37,8 +37,8 @@ global $dumpmode, $dfi_user, $dfi_passwd;
 	$ch = curl_init();
 
 	// set URL and other appropriate options
-	$url="https://api.dfi.dk/v1/person/$nr";
-	curl_setopt($ch, CURLOPT_URL, $url);
+	$api_url="https://api.dfi.dk/v1/person/$nr";
+	curl_setopt($ch, CURLOPT_URL, $api_url);
 	curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
 	curl_setopt($ch, CURLOPT_HEADER, 0);
 	curl_setopt($ch, CURLOPT_USERPWD, "$dfi_user:$dfi_passwd");
@@ -163,14 +163,12 @@ function tjk_titel($navn, $nr)
 {
 global $connection, $fra_link, $til_link, $til_link_brugt, $linkstatus, $res, $falsk_positiv_titel, $mangler_match;
 
-	$query="select page_title, el_to
+	$query="select page_title, el_to_path
 from page, externallinks
 where page_id=el_from
    and page_namespace=0
-   and ( el_to=\"http://www.dfi.dk/faktaomfilm/nationalfilmografien/nffilm.aspx?id=$nr\"
-   or el_to like \"http://www.dfi.dk/faktaomfilm/film/da/$nr.aspx%\"
-   or el_to=\"https://www.dfi.dk/viden-om-film/filmdatabasen/film/$nr\"
-   or el_to=\"http://www.dfi.dk/FaktaOmFilm/Nationalfilmografien/nffilm.aspx?id=$nr\")";
+   and el_to_domain_index = \"https://dk.dfi.www.\"
+   and el_to_path=\"/viden-om-film/filmdatabasen/film/$nr\"";
 
 	$result = $connection->query($query);
 	if($result===false)
@@ -182,7 +180,7 @@ where page_id=el_from
 		if($last_titel==$row->page_title) {} # håndere samme titel forskel url til dfi
 		else if(!isset($falsk_positiv_titel["$nr"]["$row->page_title"])) {
 			$note_titel["$antal"]=$row->page_title;
-			$ind_url=$row->el_to;
+			$ind_url="https://www.dfi.dk" . $row->el_to_path;
 			$antal++;
 			$last_titel=$row->page_title;
 		}
@@ -191,8 +189,8 @@ where page_id=el_from
 	if($antal>1) {
 		echo "<li>duplet";
 		foreach($note_titel as $cur_titel) {
-			$wikiurl="https://da.wikipedia.org/wiki/" . urlencode(strtr($cur_titel, ' ', '_'));
-			echo " - \$falsk_positiv_titel[\"$nr\"][\"$cur_titel\"] = 0; <a href=\"$wikiurl\">$cur_titel</a>";	
+			$wiki_url="https://da.wikipedia.org/wiki/" . urlencode(strtr($cur_titel, ' ', '_'));
+			echo " - \$falsk_positiv_titel[\"$nr\"][\"$cur_titel\"] = 0; <a href=\"$wiki_url\">$cur_titel</a>";	
 		}
 		echo " - <a href=\"" . $ind_url . "\">" . $nr . "</a>\n";
 		return 0;
@@ -200,11 +198,11 @@ where page_id=el_from
 
 	if($antal==1) {
 		$link=$note_titel[0];
-		$wikiurl="https://da.wikipedia.org/wiki/" . urlencode(strtr($link, ' ', '_'));
+		$wiki_url="https://da.wikipedia.org/wiki/" . urlencode(strtr($link, ' ', '_'));
 		if($res)
 			echo htmlentities(strtr($link, '_', ' '), ENT_COMPAT, "UTF-8");
 		else
-			echo "<a href=\"$wikiurl\">" . htmlentities(strtr($link, '_', ' '), ENT_COMPAT, "UTF-8") . "</a>";
+			echo "<a href=\"$wiki_url\">" . htmlentities(strtr($link, '_', ' '), ENT_COMPAT, "UTF-8") . "</a>";
 
 		if(strtr($link, '_', ' ') != $navn) {
 			echo " (D)";
@@ -265,8 +263,8 @@ where rd_from = $rd_id";
 		if(isset($til_link["$link"]))
 			$til_link_brugt["$link"]=1;
 
-		$wikiurl="https://da.wikipedia.org/wiki/" . urlencode($link);
-		echo "<a href=\"$wikiurl\">" . htmlentities($navn, ENT_COMPAT, "UTF-8") . "$tillaeg</a>";
+		$wiki_url="https://da.wikipedia.org/wiki/" . urlencode($link);
+		echo "<a href=\"$wiki_url\">" . htmlentities($navn, ENT_COMPAT, "UTF-8") . "$tillaeg</a>";
 		if(isset($til_link["$link"]) && isset($fra_link["$link"]))
 			$linkstatus=" - link ok";
 		else if(isset($til_link["$link"]))
@@ -309,12 +307,12 @@ where page_id=pl_from
 	while ($row = $result->fetch_object()) {
 		$tmp = $row->pl_title;
 		if(isset($til_link["$tmp"]) && !isset($til_link_brugt["$tmp"])) {
-			$wikiurl="https://da.wikipedia.org/wiki/" . urlencode(strtr($tmp, ' ', '_'));
-			$url="<a href=\"$wikiurl\">" . htmlentities(strtr($tmp, '_', ' '), ENT_COMPAT, "UTF-8") . "</a>";
+			$wiki_url="https://da.wikipedia.org/wiki/" . urlencode(strtr($tmp, ' ', '_'));
+			$xx_url="<a href=\"$wiki_url\">" . htmlentities(strtr($tmp, '_', ' '), ENT_COMPAT, "UTF-8") . "</a>";
 			if($liste=="")
-				$liste=$url;
+				$liste=$xx_url;
 			else
-				$liste.=", " . $url;
+				$liste.=", " . $xx_url;
 		}
 		#else if(isset($til_link["$tmp"]))
 			#$liste .= "- $tmp";
@@ -341,10 +339,8 @@ global $konv_rolletype, $connection, $linkstatus, $falsk_positiv_person, $verbos
 from page, externallinks
 where page_id=el_from
    and page_namespace=0
-   and ( el_to=\"http://www.dfi.dk/faktaomfilm/nationalfilmografien/nfperson.aspx?id=" . $filmdata->Id . "\"
-   or el_to like \"http://www.dfi.dk/faktaomfilm/person/da/$filmdata->Id.aspx%\"
-   or el_to=\"https://www.dfi.dk/viden-om-film/filmdatabasen/person/" . $filmdata->Id . "\"
-   or el_to=\"http://www.dfi.dk/FaktaOmFilm/Nationalfilmografien/nfperson.aspx?id=" . $filmdata->Id . "\")";
+   and el_to_domain_index = \"https://dk.dfi.www.\"
+   and el_to=\"https://www.dfi.dk/viden-om-film/filmdatabasen/person/" . $filmdata->Id . "\"";
 
 	$result = $connection->query($query);
 	if($result===false)
@@ -360,8 +356,8 @@ where page_id=el_from
 				echo "følg: $filmdata->Id $row->page_title\n";
 			$link=$row->page_title;
 			$id=$row->page_id;
-			$wikiurl="https://da.wikipedia.org/wiki/" . urlencode(strtr($link, ' ', '_'));
-			$slut="  Wikipedia: <a href=\"$wikiurl\">" . htmlentities(strtr($link, '_', ' '), ENT_COMPAT, "UTF-8") . "</a>";
+			$wiki_url="https://da.wikipedia.org/wiki/" . urlencode(strtr($link, ' ', '_'));
+			$slut="  Wikipedia: <a href=\"$wiki_url\">" . htmlentities(strtr($link, '_', ' '), ENT_COMPAT, "UTF-8") . "</a>";
 		}
 	}
 
@@ -377,8 +373,8 @@ and page_namespace=0";
 			echo "$query\n";
 
 		if ($row = $result->fetch_object()) {
-			$wikiurl="https://da.wikipedia.org/wiki/" . urlencode(strtr($filmdata->Name, ' ', '_'));
-			$slut="&ndash; Wikipedia:  <a href=\"$wikiurl\">" . htmlentities($filmdata->Name, ENT_COMPAT, "UTF-8") . "</a> &ndash; {{Danmark Nationalfilmografi navn|" . $filmdata->Id . "}}";
+			$wiki_url="https://da.wikipedia.org/wiki/" . urlencode(strtr($filmdata->Name, ' ', '_'));
+			$slut="&ndash; Wikipedia:  <a href=\"$wiki_url\">" . htmlentities($filmdata->Name, ENT_COMPAT, "UTF-8") . "</a> &ndash; {{Danmark Nationalfilmografi navn|" . $filmdata->Id . "}}";
 			$link=$row->page_title;
 			$id=$row->page_id;
 		} else {
