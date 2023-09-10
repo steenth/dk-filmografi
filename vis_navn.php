@@ -340,7 +340,7 @@ from page, externallinks
 where page_id=el_from
    and page_namespace=0
    and el_to_domain_index = \"https://dk.dfi.www.\"
-   and el_to=\"https://www.dfi.dk/viden-om-film/filmdatabasen/person/" . $filmdata->Id . "\"";
+   and el_to_path=\"/viden-om-film/filmdatabasen/person/" . $filmdata->Id . "\"";
 
 	$result = $connection->query($query);
 	if($result===false)
