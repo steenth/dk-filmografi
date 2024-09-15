@@ -78,32 +78,34 @@ function note_links($link, $id)
 global $connection, $fra_link, $til_link, $verbose;
 
 	# direkte link til film-titel
-	$query="select pl_title
-from pagelinks, page
+	$query="select lt_title
+from pagelinks, linktarget, page
 where pl_from=$id
-and page_title=pl_title
-and page_namespace = pl_namespace
+and page_title=lt_title
+and page_namespace = lt_namespace
+and pl_target_id = lt_id
 and page_is_redirect=0
-and pl_namespace = 0";
+and lt_namespace = 0";
 
 	$result = $connection->query($query);
 	if($result===false)
 		echo "$query\n";
 
 	while ($row = $result->fetch_object()) {
-		$til_link["$row->pl_title"] = 0;
+		$til_link["$row->lt_title"] = 0;
 		if($verbose)
-			echo "til $row->pl_title 0\n";
+			echo "til $row->lt_title 0\n";
 	}	
 
 	# indirekte link til film-titel
-        $query = "select rd_title, pl_title
-from page, pagelinks, redirect
+        $query = "select rd_title, lt_title
+from page, linktarget, pagelinks, redirect
 where pl_from = $id
-and page_title = pl_title
-and page_namespace = pl_namespace
+and page_title = lt_title
+and page_namespace = lt_namespace
+and pl_target_id = lt_id
 and page_is_redirect!=0
-and pl_namespace = 0
+and lt_namespace = 0
 and rd_from = page_id
 and rd_namespace = 0";
 	
@@ -114,15 +116,16 @@ and rd_namespace = 0";
 	while ($row = $result->fetch_object()) {
 		$til_link["$row->rd_title"] = 1;
 		if($verbose)
-			echo "til $row->rd_title 1 " . $row->rd_title . " " . $row->pl_title . "\n";
+			echo "til $row->rd_title 1 " . $row->rd_title . " " . $row->lt_title . "\n";
 	}	
 
 	$query="select page_title
-from page, pagelinks
-where pl_title='" . addslashes($link) . "'
+from page, linktarget, pagelinks
+where lt_title='" . addslashes($link) . "'
 and page_id=pl_from
+and pl_target_id = lt_id
 and page_namespace=0
-and pl_namespace=0";
+and lt_namespace=0";
 
 	$result = $connection->query($query);
 	if($result===false)
@@ -135,13 +138,13 @@ and pl_namespace=0";
 	}	
 
 	$query="select p1.page_title, p2.page_title
-from page p1, redirect, pagelinks, page p2
+from page p1, redirect, linktarget, pagelinks, page p2
 where rd_title='" . addslashes($link) . "'
 and p1.page_id=rd_from
 and rd_namespace=0
 and p1.page_namespace=0
-and pl_title=p1.page_title
-and pl_namespace=0
+and lt_title=p1.page_title
+and lt_namespace=0
 and pl_from=p2.page_id
 and p2.page_namespace=0";
 
@@ -291,11 +294,11 @@ function tjk_ikkebrugt()
 {
 global $til_link, $til_link_brugt, $connection;
 
-	$query="select pl_title
-from pagelinks, page
+	$query="select lt_title
+from pagelinks, linktarget, page
 where page_id=pl_from
    and page_namespace=2
-   and pl_namespace=0
+   and lt_namespace=0
    and page_title='Steenth/Danske_film_tjek'";
 
 	$result = $connection->query($query);
@@ -305,7 +308,7 @@ where page_id=pl_from
 	$liste="";
 
 	while ($row = $result->fetch_object()) {
-		$tmp = $row->pl_title;
+		$tmp = $row->lt_title;
 		if(isset($til_link["$tmp"]) && !isset($til_link_brugt["$tmp"])) {
 			$wiki_url="https://da.wikipedia.org/wiki/" . urlencode(strtr($tmp, ' ', '_'));
 			$xx_url="<a href=\"$wiki_url\">" . htmlentities(strtr($tmp, '_', ' '), ENT_COMPAT, "UTF-8") . "</a>";
